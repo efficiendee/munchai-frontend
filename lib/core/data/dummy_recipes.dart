@@ -4,35 +4,33 @@ const dummyRecipes = <Recipe>[
   Recipe(
     id: '1',
     title: 'Soy-Garlic Chicken Rice Bowl',
-    imageUrl:
-        'https://images.unsplash.com/photo-1512058564366-18510be2db19?auto=format&fit=crop&w=1400&q=80',
+    imageUrl: 'assets/images/recipe1.png',
     matchScore: 95,
     minutes: 20,
     difficulty: 'Easy',
     tagline: 'Sweet umami comfort bowl',
-    ingredients: ['Chicken', 'Rice', 'Soy sauce', 'Garlic', 'Scallions'],
+    ingredients: ['300g chicken breast', '150g rice', '40ml soy sauce', '3 cloves garlic', '1 onion', 'carrot'],
     steps: [
       'Cook rice and keep warm.',
-      'Sear chicken strips for 6–8 min.',
+      'Sear chicken cubes for 6–8 min.',
       'Add garlic + soy sauce and glaze.',
-      'Serve over rice, top with scallions.'
+      'Serve over rice with carrot and scallions.'
     ],
   ),
   Recipe(
     id: '2',
-    title: 'Protein Pasta Bowl',
-    imageUrl:
-        'https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?auto=format&fit=crop&w=1400&q=80',
+    title: 'Salmon Poke Bowl',
+    imageUrl: 'assets/images/recipe2.png',
     matchScore: 88,
     minutes: 18,
     difficulty: 'Easy',
-    tagline: 'Fast post-work fuel',
-    ingredients: ['Pasta', 'Greek yogurt', 'Spinach', 'Parmesan'],
+    tagline: 'Fresh and protein-rich',
+    ingredients: ['Salmon', 'Rice', 'Cucumber', 'Avocado', 'Sesame'],
     steps: [
-      'Boil pasta al dente.',
-      'Mix yogurt with pasta water and parmesan.',
-      'Fold in spinach and pasta.',
-      'Season and plate.'
+      'Cook and cool rice.',
+      'Cube salmon and season lightly.',
+      'Slice cucumber and avocado.',
+      'Assemble bowl and finish with sesame.'
     ],
   ),
 ];

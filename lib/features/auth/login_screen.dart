@@ -59,14 +59,9 @@ class _Logo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Container(
-        width: 96,
-        height: 96,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(28),
-          gradient: const LinearGradient(colors: [Color(0xFF7AFF6B), Color(0xFFB5FF8B)]),
-        ),
-        child: const Icon(Icons.restaurant_menu_rounded, color: Colors.black, size: 48),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(28),
+        child: Image.asset('assets/images/figma_logo.png', width: 96, height: 96, fit: BoxFit.cover),
       ),
     );
   }
