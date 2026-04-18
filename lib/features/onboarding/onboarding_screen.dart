@@ -14,7 +14,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   int _index = 0;
 
   static const _frames = [
-    'assets/images/onboarding1.png',
     'assets/images/onboarding2.png',
     'assets/images/onboarding3.png',
     'assets/images/onboarding4.png',
@@ -91,44 +90,36 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       body: Container(
         color: Colors.black,
         child: SafeArea(
-          child: Column(
-            children: [
-              Expanded(
-                child: PageView.builder(
-                  controller: _controller,
-                  itemCount: _frames.length,
-                  onPageChanged: (value) => setState(() => _index = value),
-                  itemBuilder: (context, i) => Center(
-                    child: AspectRatio(
-                      aspectRatio: 390 / 845,
-                      child: Image.asset(_frames[i], fit: BoxFit.cover),
-                    ),
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-                child: Row(
-                  children: [
-                    if (_index > 0)
-                      TextButton(
-                        onPressed: () => _controller.previousPage(
-                          duration: const Duration(milliseconds: 220),
-                          curve: Curves.easeOut,
+          child: Center(
+            child: AspectRatio(
+              aspectRatio: 390 / 845,
+              child: PageView.builder(
+                controller: _controller,
+                itemCount: _frames.length,
+                onPageChanged: (value) => setState(() => _index = value),
+                itemBuilder: (context, i) {
+                  return Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      Image.asset(_frames[i], fit: BoxFit.cover),
+                      // invisible clickable hotspot for the original primary CTA area
+                      Positioned(
+                        left: 24,
+                        right: 24,
+                        bottom: 64,
+                        child: SizedBox(
+                          height: 48,
+                          child: GestureDetector(
+                            behavior: HitTestBehavior.opaque,
+                            onTap: _nextOrFinish,
+                          ),
                         ),
-                        child: const Text('Back'),
-                      )
-                    else
-                      const SizedBox(width: 64),
-                    const Spacer(),
-                    ElevatedButton(
-                      onPressed: _nextOrFinish,
-                      child: Text(_index == _frames.length - 1 ? 'Finish' : 'Next'),
-                    ),
-                  ],
-                ),
+                      ),
+                    ],
+                  );
+                },
               ),
-            ],
+            ),
           ),
         ),
       ),
