@@ -10,7 +10,6 @@ class OnboardingScreen extends StatefulWidget {
 }
 
 class _OnboardingScreenState extends State<OnboardingScreen> {
-  final _controller = PageController();
   int _index = 0;
 
   static const _frames = [
@@ -19,69 +18,20 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     'assets/images/onboarding4.png',
   ];
 
-  Future<void> _nextOrFinish() async {
+  Future<void> _advance() async {
     if (_index < _frames.length - 1) {
-      await _controller.nextPage(
-        duration: const Duration(milliseconds: 260),
-        curve: Curves.easeOut,
-      );
+      setState(() => _index += 1);
       return;
     }
 
-    final tasteProfile = await _openTasteProfileSheet();
-    if (tasteProfile != null && tasteProfile.trim().isNotEmpty) {
-      await widget.onComplete(tasteProfile.trim());
-    }
+    // Prototype taste-profile placeholder value (flow-ready for backend hookup).
+    await widget.onComplete('onboarding-prototype-profile');
   }
 
-  Future<String?> _openTasteProfileSheet() async {
-    final textController = TextEditingController();
-    return showModalBottomSheet<String>(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: const Color(0xFF151A22),
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
-      builder: (context) {
-        return Padding(
-          padding: EdgeInsets.fromLTRB(
-            16,
-            16,
-            16,
-            MediaQuery.of(context).viewInsets.bottom + 16,
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const Text(
-                'Taste profile',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
-              ),
-              const SizedBox(height: 8),
-              const Text(
-                'Beschreibe kurz deinen Geschmack (z. B. umami, spicy, high-protein).',
-                style: TextStyle(color: Colors.white70),
-              ),
-              const SizedBox(height: 12),
-              TextField(
-                controller: textController,
-                maxLines: 3,
-                decoration: const InputDecoration(
-                  hintText: 'z. B. Umami, scharf, schnelle Gerichte, asiatisch…',
-                ),
-              ),
-              const SizedBox(height: 12),
-              ElevatedButton(
-                onPressed: () => Navigator.pop(context, textController.text),
-                child: const Text('Finish onboarding'),
-              ),
-            ],
-          ),
-        );
-      },
-    );
+  Future<void> _back() async {
+    if (_index > 0) {
+      setState(() => _index -= 1);
+    }
   }
 
   @override
@@ -93,31 +43,36 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           child: Center(
             child: AspectRatio(
               aspectRatio: 390 / 845,
-              child: PageView.builder(
-                controller: _controller,
-                itemCount: _frames.length,
-                onPageChanged: (value) => setState(() => _index = value),
-                itemBuilder: (context, i) {
-                  return Stack(
-                    fit: StackFit.expand,
-                    children: [
-                      Image.asset(_frames[i], fit: BoxFit.cover),
-                      // invisible clickable hotspot for the original primary CTA area
-                      Positioned(
-                        left: 24,
-                        right: 24,
-                        bottom: 64,
-                        child: SizedBox(
-                          height: 48,
-                          child: GestureDetector(
-                            behavior: HitTestBehavior.opaque,
-                            onTap: _nextOrFinish,
-                          ),
-                        ),
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  Image.asset(_frames[_index], fit: BoxFit.cover),
+
+                  // Primary CTA hotspot (bottom button area from Figma)
+                  Positioned(
+                    left: 24,
+                    right: 24,
+                    bottom: 56,
+                    height: 50,
+                    child: GestureDetector(
+                      behavior: HitTestBehavior.opaque,
+                      onTap: _advance,
+                    ),
+                  ),
+
+                  // Back arrow hotspot for screens 3/4 where arrow exists in Figma header
+                  if (_index > 0)
+                    Positioned(
+                      left: 24,
+                      top: 56,
+                      width: 32,
+                      height: 32,
+                      child: GestureDetector(
+                        behavior: HitTestBehavior.opaque,
+                        onTap: _back,
                       ),
-                    ],
-                  );
-                },
+                    ),
+                ],
               ),
             ),
           ),
