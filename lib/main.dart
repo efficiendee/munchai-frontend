@@ -43,8 +43,15 @@ class _AppGateState extends State<_AppGate> {
   }
 
   Future<void> _load() async {
-    _loggedIn = await AppPrefs.isLoggedIn();
-    _onboardingDone = await AppPrefs.isOnboardingDone();
+    // Dev mode behavior requested by Dave:
+    // - Always show login after app restart
+    // - Always show onboarding after login (every app run)
+    await AppPrefs.setLoggedIn(false);
+    await AppPrefs.setOnboardingDone(false);
+
+    _loggedIn = false;
+    _onboardingDone = false;
+
     if (mounted) {
       setState(() => _loading = false);
     }
