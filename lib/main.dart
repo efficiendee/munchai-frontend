@@ -55,6 +55,15 @@ class _AppGateState extends State<_AppGate> {
     setState(() => _loggedIn = true);
   }
 
+  Future<void> _register() async {
+    await AppPrefs.setLoggedIn(true);
+    await AppPrefs.setOnboardingDone(false);
+    setState(() {
+      _loggedIn = true;
+      _onboardingDone = false;
+    });
+  }
+
   Future<void> _finishOnboarding(String tasteProfile) async {
     await AppPrefs.setTasteProfile(tasteProfile);
     await AppPrefs.setOnboardingDone(true);
@@ -68,7 +77,7 @@ class _AppGateState extends State<_AppGate> {
     }
 
     if (!_loggedIn) {
-      return LoginScreen(onLogin: _login);
+      return LoginScreen(onLogin: _login, onRegister: _register);
     }
 
     if (!_onboardingDone) {

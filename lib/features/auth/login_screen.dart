@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 
+import 'register_screen.dart';
+
 class LoginScreen extends StatefulWidget {
   final Future<void> Function() onLogin;
+  final Future<void> Function() onRegister;
 
-  const LoginScreen({super.key, required this.onLogin});
+  const LoginScreen({super.key, required this.onLogin, required this.onRegister});
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -89,13 +92,23 @@ class _LoginScreenState extends State<LoginScreen> {
                   ],
                 ),
                 const Spacer(),
-                const Padding(
-                  padding: EdgeInsets.only(bottom: 22),
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 22),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text('Don\'t have an account? ', style: TextStyle(color: Colors.white70)),
-                      Text('Sign Up', style: TextStyle(color: Color(0xFF2FD4CB), fontWeight: FontWeight.w700)),
+                      const Text('Don\'t have an account? ', style: TextStyle(color: Colors.white70)),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => RegisterScreen(onRegister: widget.onRegister),
+                            ),
+                          );
+                        },
+                        child: const Text('Sign Up', style: TextStyle(color: Color(0xFF2FD4CB), fontWeight: FontWeight.w700)),
+                      ),
                     ],
                   ),
                 )
