@@ -70,7 +70,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 SizedBox(
                   height: 50,
                   child: ElevatedButton(
-                    onPressed: () async => widget.onRegister(),
+                    onPressed: () async {
+                      await widget.onRegister();
+                      if (mounted) {
+                        Navigator.of(context).popUntil((route) => route.isFirst);
+                      }
+                    },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF2FD4CB),
                       foregroundColor: const Color(0xFF042A2F),
@@ -80,13 +85,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                 ),
                 const Spacer(),
-                const Padding(
-                  padding: EdgeInsets.only(bottom: 22),
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 22),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text('Already have an account? ', style: TextStyle(color: Colors.white70)),
-                      Text('Login', style: TextStyle(color: Color(0xFF2FD4CB), fontWeight: FontWeight.w700)),
+                      const Text('Already have an account? ', style: TextStyle(color: Colors.white70)),
+                      GestureDetector(
+                        onTap: () => Navigator.pop(context),
+                        child: const Text('Login', style: TextStyle(color: Color(0xFF2FD4CB), fontWeight: FontWeight.w700)),
+                      ),
                     ],
                   ),
                 )

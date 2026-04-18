@@ -16,12 +16,15 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   String _diet = 'Omnivore';
   final Set<String> _goals = {'Fast'};
   final Set<String> _allergens = {};
+  String _plan = 'Balanced';
+
+  static const _totalPages = 4;
 
   Future<void> _next() async {
-    if (_index < 2) {
+    if (_index < _totalPages - 1) {
       await _controller.nextPage(duration: const Duration(milliseconds: 240), curve: Curves.easeOut);
     } else {
-      final profile = 'diet=$_diet; goals=${_goals.join(",")}; allergens=${_allergens.join(",")}';
+      final profile = 'diet=$_diet; plan=$_plan; goals=${_goals.join(",")}; allergens=${_allergens.join(",")}';
       await widget.onComplete(profile);
     }
   }
@@ -49,10 +52,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               const SizedBox(height: 10),
               Row(
                 children: [
-                  if (_index > 0)
-                    IconButton(onPressed: _back, icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white70))
-                  else
-                    const SizedBox(width: 48),
+                  IconButton(
+                    onPressed: _index > 0 ? _back : null,
+                    icon: Icon(
+                      Icons.arrow_back_ios_new_rounded,
+                      color: _index > 0 ? Colors.white70 : Colors.transparent,
+                    ),
+                  ),
                   const Spacer(),
                   const Icon(Icons.tune_rounded, color: Color(0xFF2FD4CB)),
                 ],
@@ -63,7 +69,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: List.generate(
-                  3,
+                  _totalPages,
                   (i) => AnimatedContainer(
                     duration: const Duration(milliseconds: 180),
                     margin: const EdgeInsets.symmetric(horizontal: 4),
@@ -87,12 +93,65 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     foregroundColor: const Color(0xFF042A2F),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                   ),
-                  child: Text(_index == 2 ? 'Finish' : 'Next', style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 18)),
+                  child: Text(_index == _totalPages - 1 ? 'Finish' : 'Next',
+                      style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 18)),
                 ),
               ),
               const SizedBox(height: 16),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _planCard(String title, String imageUrl, String subtitle) {
+    final selected = _plan == title;
+    return GestureDetector(
+      onTap: () => setState(() => _plan = title),
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 12),
+        decoration: BoxDecoration(
+          color: const Color(0xFF152228),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: selected ? const Color(0xFF2FD4CB) : const Color(0xFF2B3940), width: 1.4),
+        ),
+        child: Row(
+          children: [
+            ClipRRect(
+              borderRadius: const BorderRadius.only(topLeft: Radius.circular(14), bottomLeft: Radius.circular(14)),
+              child: Image.network(
+                imageUrl,
+                width: 92,
+                height: 92,
+                fit: BoxFit.cover,
+                errorBuilder: (_, __, ___) => Container(
+                  width: 92,
+                  height: 92,
+                  color: const Color(0xFF1D2D34),
+                  child: const Icon(Icons.fastfood, color: Color(0xFF2FD4CB)),
+                ),
+              ),
+            ),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(title, style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w700)),
+                    const SizedBox(height: 6),
+                    Text(subtitle, style: const TextStyle(color: Colors.white70, fontSize: 12)),
+                  ],
+                ),
+              ),
+            ),
+            if (selected)
+              const Padding(
+                padding: EdgeInsets.only(right: 10),
+                child: Icon(Icons.check_circle, color: Color(0xFF2FD4CB)),
+              ),
+          ],
         ),
       ),
     );
@@ -110,7 +169,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(height: 22),
-                const Text('Let\'s personalize\nyour feed', style: TextStyle(fontSize: 34, fontWeight: FontWeight.w700, color: Colors.white)),
+                const Text('Let\'s personalize\nyour feed',
+                    style: TextStyle(fontSize: 34, fontWeight: FontWeight.w700, color: Colors.white)),
                 const SizedBox(height: 8),
                 const Text('Choose your diet preference', style: TextStyle(color: Colors.white70)),
                 const SizedBox(height: 22),
@@ -139,7 +199,25 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(height: 22),
-                const Text('What\'s your goal?', style: TextStyle(fontSize: 34, fontWeight: FontWeight.w700, color: Colors.white)),
+                const Text('Pick your meal style',
+                    style: TextStyle(fontSize: 34, fontWeight: FontWeight.w700, color: Colors.white)),
+                const SizedBox(height: 8),
+                const Text('Visual cards like in Figma onboarding 3', style: TextStyle(color: Colors.white70)),
+                const SizedBox(height: 16),
+                _planCard('Balanced', 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400', 'Everyday mix, broad variety'),
+                _planCard('High Protein', 'https://images.unsplash.com/photo-1604908177073-518c7c54f9b1?w=400', 'More protein-focused recipes'),
+                _planCard('Quick & Easy', 'https://images.unsplash.com/photo-1498837167922-ddd27525d352?w=400', 'Fast recipes for busy days'),
+                const Spacer(),
+              ],
+            ),
+          ),
+          _frame(
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 22),
+                const Text('What\'s your goal?',
+                    style: TextStyle(fontSize: 34, fontWeight: FontWeight.w700, color: Colors.white)),
                 const SizedBox(height: 8),
                 const Text('This helps the app prioritize recipes', style: TextStyle(color: Colors.white70)),
                 const SizedBox(height: 20),

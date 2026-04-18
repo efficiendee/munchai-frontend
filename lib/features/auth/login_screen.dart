@@ -100,10 +100,11 @@ class _LoginScreenState extends State<LoginScreen> {
                       const Text('Don\'t have an account? ', style: TextStyle(color: Colors.white70)),
                       GestureDetector(
                         onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => RegisterScreen(onRegister: widget.onRegister),
+                          Navigator.of(context).push(
+                            PageRouteBuilder(
+                              pageBuilder: (_, __, ___) => RegisterScreen(onRegister: widget.onRegister),
+                              transitionsBuilder: (_, animation, __, child) => FadeTransition(opacity: animation, child: child),
+                              transitionDuration: const Duration(milliseconds: 220),
                             ),
                           );
                         },
