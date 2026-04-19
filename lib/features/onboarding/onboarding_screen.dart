@@ -162,11 +162,17 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const SizedBox(height: 6),
-          const Text('What’s your diet?', style: TextStyle(color: Colors.white, fontSize: 34, fontWeight: FontWeight.w700)),
-          const SizedBox(height: 8),
-          const Text('Select one. You can change this anytime.', style: TextStyle(color: Colors.white70)),
-          const SizedBox(height: 18),
+          const SizedBox(height: 2),
+          const Text(
+            'What’s your diet?',
+            style: TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.w600),
+          ),
+          const SizedBox(height: 16),
+          const Text(
+            'Select one. You can change this anytime.',
+            style: TextStyle(color: Colors.white70, fontSize: 16, fontWeight: FontWeight.w400),
+          ),
+          const SizedBox(height: 20),
           _dietCard(
             title: 'Omnivore',
             subtitle: 'All foods included! You eat everything.',
@@ -183,8 +189,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             image: 'https://images.unsplash.com/photo-1547592180-85f173990554?w=400',
           ),
           _dietCard(
-            title: 'Pescetarian',
-            subtitle: 'Plant-based, with fish and seafood allowed.',
+            title: 'Flexitarian',
+            subtitle: 'Primarily vegetarian, with flexible meat/fish options.',
             image: 'https://images.unsplash.com/photo-1559847844-5315695dadae?w=400',
           ),
           const Spacer(),
@@ -198,11 +204,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     return GestureDetector(
       onTap: () => setState(() => _diet = title),
       child: Container(
+        height: 96,
         margin: const EdgeInsets.only(bottom: 10),
         decoration: BoxDecoration(
           color: const Color(0xFF162329),
           borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: selected ? const Color(0xFF2FD4CB) : const Color(0xFF29363C), width: 1.4),
+          border: Border.all(color: selected ? const Color(0xFF2FD4CB) : const Color(0xFF29363C), width: 1.2),
         ),
         child: Row(
           children: [
@@ -210,12 +217,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               borderRadius: const BorderRadius.only(topLeft: Radius.circular(13), bottomLeft: Radius.circular(13)),
               child: Image.network(
                 image,
-                width: 88,
-                height: 88,
+                width: 94,
+                height: 96,
                 fit: BoxFit.cover,
                 errorBuilder: (_, __, ___) => Container(
-                  width: 88,
-                  height: 88,
+                  width: 94,
+                  height: 96,
                   color: const Color(0xFF223239),
                   child: const Icon(Icons.fastfood, color: Color(0xFF2FD4CB)),
                 ),
@@ -223,13 +230,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             ),
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(12, 10, 10, 10),
+                padding: const EdgeInsets.fromLTRB(14, 10, 12, 8),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(title, style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w700)),
-                    const SizedBox(height: 4),
-                    Text(subtitle, style: const TextStyle(color: Colors.white70, fontSize: 12)),
+                    Text(title, style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w600)),
+                    const SizedBox(height: 8),
+                    Text(subtitle, style: const TextStyle(color: Colors.white70, fontSize: 16, height: 1.2)),
                   ],
                 ),
               ),
