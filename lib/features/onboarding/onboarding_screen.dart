@@ -14,19 +14,20 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   int _index = 0;
 
   String _diet = 'Omnivore';
-  final Set<String> _goals = {'Fast'};
   final Set<String> _allergens = {};
-  String _plan = 'Balanced';
+  final Set<String> _goals = {'Fast'};
 
-  static const _totalPages = 4;
+  static const _allergenOptions = ['Gluten', 'Crustaceans', 'Egg', 'Soy', 'Peanut', 'Fish', 'Dairy'];
+  static const _goalOptions = ['Fast', 'Budget-friendly', 'Healthy', 'High-protein', 'Low-carb', 'Low-fat', 'High-fiber', 'Low -sugar'];
 
   Future<void> _next() async {
-    if (_index < _totalPages - 1) {
+    if (_index < 2) {
       await _controller.nextPage(duration: const Duration(milliseconds: 240), curve: Curves.easeOut);
-    } else {
-      final profile = 'diet=$_diet; plan=$_plan; goals=${_goals.join(",")}; allergens=${_allergens.join(",")}';
-      await widget.onComplete(profile);
+      return;
     }
+
+    final profile = 'diet=$_diet; allergens=${_allergens.join(',')}; goals=${_goals.join(',')}';
+    await widget.onComplete(profile);
   }
 
   Future<void> _back() async {
@@ -35,7 +36,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     }
   }
 
-  Widget _frame(Widget child) {
+  Widget _shell({required Widget child, required String ctaLabel}) {
     return Container(
       decoration: const BoxDecoration(
         gradient: LinearGradient(
@@ -46,7 +47,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       ),
       child: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
+          padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Column(
             children: [
               const SizedBox(height: 10),
@@ -54,38 +55,15 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 children: [
                   IconButton(
                     onPressed: _index > 0 ? _back : null,
-                    icon: Icon(
-                      Icons.arrow_back_ios_new_rounded,
-                      color: _index > 0 ? Colors.white70 : Colors.transparent,
-                    ),
+                    icon: Icon(Icons.arrow_back_ios_new_rounded, color: _index > 0 ? Colors.white70 : Colors.transparent),
                   ),
                   const Spacer(),
-                  const Icon(Icons.tune_rounded, color: Color(0xFF2FD4CB)),
                 ],
               ),
-              const SizedBox(height: 8),
               Expanded(child: child),
-              const SizedBox(height: 10),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: List.generate(
-                  _totalPages,
-                  (i) => AnimatedContainer(
-                    duration: const Duration(milliseconds: 180),
-                    margin: const EdgeInsets.symmetric(horizontal: 4),
-                    width: i == _index ? 18 : 8,
-                    height: 8,
-                    decoration: BoxDecoration(
-                      color: i == _index ? const Color(0xFF2FD4CB) : const Color(0xFF3F4B50),
-                      borderRadius: BorderRadius.circular(999),
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 14),
               SizedBox(
                 width: double.infinity,
-                height: 50,
+                height: 52,
                 child: ElevatedButton(
                   onPressed: _next,
                   style: ElevatedButton.styleFrom(
@@ -93,11 +71,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     foregroundColor: const Color(0xFF042A2F),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                   ),
-                  child: Text(_index == _totalPages - 1 ? 'Finish' : 'Next',
-                      style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 18)),
+                  child: Text(ctaLabel, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800)),
                 ),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 20),
             ],
           ),
         ),
@@ -105,54 +82,160 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     );
   }
 
-  Widget _planCard(String title, String imageUrl, String subtitle) {
-    final selected = _plan == title;
+  Widget _dietPage() {
+    return _shell(
+      ctaLabel: 'Next',
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(height: 6),
+          const Text('What’s your diet?', style: TextStyle(color: Colors.white, fontSize: 34, fontWeight: FontWeight.w700)),
+          const SizedBox(height: 8),
+          const Text('Select one. You can change this anytime.', style: TextStyle(color: Colors.white70)),
+          const SizedBox(height: 18),
+          _dietCard(
+            title: 'Omnivore',
+            subtitle: 'All foods included! You eat everything.',
+            image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400',
+          ),
+          _dietCard(
+            title: 'Vegetarian',
+            subtitle: 'Plant-based, with dairy/eggs allowed.',
+            image: 'https://images.unsplash.com/photo-1512058564366-c9e7b02f8bc7?w=400',
+          ),
+          _dietCard(
+            title: 'Vegan',
+            subtitle: '100% plant-based.',
+            image: 'https://images.unsplash.com/photo-1547592180-85f173990554?w=400',
+          ),
+          _dietCard(
+            title: 'Pescetarian',
+            subtitle: 'Plant-based, with fish and seafood allowed.',
+            image: 'https://images.unsplash.com/photo-1559847844-5315695dadae?w=400',
+          ),
+          const Spacer(),
+        ],
+      ),
+    );
+  }
+
+  Widget _dietCard({required String title, required String subtitle, required String image}) {
+    final selected = _diet == title;
     return GestureDetector(
-      onTap: () => setState(() => _plan = title),
+      onTap: () => setState(() => _diet = title),
       child: Container(
-        margin: const EdgeInsets.only(bottom: 12),
+        margin: const EdgeInsets.only(bottom: 10),
         decoration: BoxDecoration(
-          color: const Color(0xFF152228),
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: selected ? const Color(0xFF2FD4CB) : const Color(0xFF2B3940), width: 1.4),
+          color: const Color(0xFF162329),
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: selected ? const Color(0xFF2FD4CB) : const Color(0xFF29363C), width: 1.4),
         ),
         child: Row(
           children: [
             ClipRRect(
-              borderRadius: const BorderRadius.only(topLeft: Radius.circular(14), bottomLeft: Radius.circular(14)),
+              borderRadius: const BorderRadius.only(topLeft: Radius.circular(13), bottomLeft: Radius.circular(13)),
               child: Image.network(
-                imageUrl,
-                width: 92,
-                height: 92,
+                image,
+                width: 88,
+                height: 88,
                 fit: BoxFit.cover,
                 errorBuilder: (_, __, ___) => Container(
-                  width: 92,
-                  height: 92,
-                  color: const Color(0xFF1D2D34),
+                  width: 88,
+                  height: 88,
+                  color: const Color(0xFF223239),
                   child: const Icon(Icons.fastfood, color: Color(0xFF2FD4CB)),
                 ),
               ),
             ),
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                padding: const EdgeInsets.fromLTRB(12, 10, 10, 10),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(title, style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w700)),
-                    const SizedBox(height: 6),
+                    const SizedBox(height: 4),
                     Text(subtitle, style: const TextStyle(color: Colors.white70, fontSize: 12)),
                   ],
                 ),
               ),
             ),
-            if (selected)
-              const Padding(
-                padding: EdgeInsets.only(right: 10),
-                child: Icon(Icons.check_circle, color: Color(0xFF2FD4CB)),
-              ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _allergenPage() {
+    return _shell(
+      ctaLabel: 'Next',
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(height: 6),
+          const Text('Any allergens?', style: TextStyle(color: Colors.white, fontSize: 34, fontWeight: FontWeight.w700)),
+          const SizedBox(height: 8),
+          const Text('Mark anything to avoid. We’ll remove those ingredients and suggest swaps.', style: TextStyle(color: Colors.white70)),
+          const SizedBox(height: 20),
+          Wrap(
+            spacing: 10,
+            runSpacing: 10,
+            children: _allergenOptions.map((a) {
+              final selected = _allergens.contains(a);
+              return FilterChip(
+                label: Text(a),
+                selected: selected,
+                selectedColor: const Color(0xFF2FD4CB),
+                labelStyle: TextStyle(color: selected ? const Color(0xFF042A2F) : Colors.white),
+                backgroundColor: const Color(0xFF152228),
+                showCheckmark: false,
+                onSelected: (s) => setState(() => s ? _allergens.add(a) : _allergens.remove(a)),
+              );
+            }).toList(),
+          ),
+          const Spacer(),
+        ],
+      ),
+    );
+  }
+
+  Widget _goalsPage() {
+    return _shell(
+      ctaLabel: 'Let’s cook!',
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(height: 6),
+          const Text('What are your goals?', style: TextStyle(color: Colors.white, fontSize: 34, fontWeight: FontWeight.w700)),
+          const SizedBox(height: 8),
+          const Text('Choose up to 3 priorities to shape your recipes.', style: TextStyle(color: Colors.white70)),
+          const SizedBox(height: 20),
+          Wrap(
+            spacing: 10,
+            runSpacing: 10,
+            children: _goalOptions.map((g) {
+              final selected = _goals.contains(g);
+              return FilterChip(
+                label: Text(g),
+                selected: selected,
+                selectedColor: const Color(0xFF2FD4CB),
+                labelStyle: TextStyle(color: selected ? const Color(0xFF042A2F) : Colors.white),
+                backgroundColor: const Color(0xFF152228),
+                showCheckmark: false,
+                onSelected: (s) {
+                  setState(() {
+                    if (s) {
+                      if (_goals.length < 3) _goals.add(g);
+                    } else {
+                      _goals.remove(g);
+                    }
+                  });
+                },
+              );
+            }).toList(),
+          ),
+          const Spacer(),
+        ],
       ),
     );
   }
@@ -163,114 +246,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       body: PageView(
         controller: _controller,
         onPageChanged: (i) => setState(() => _index = i),
-        children: [
-          _frame(
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 22),
-                const Text('Let\'s personalize\nyour feed',
-                    style: TextStyle(fontSize: 34, fontWeight: FontWeight.w700, color: Colors.white)),
-                const SizedBox(height: 8),
-                const Text('Choose your diet preference', style: TextStyle(color: Colors.white70)),
-                const SizedBox(height: 22),
-                Wrap(
-                  spacing: 10,
-                  runSpacing: 10,
-                  children: ['Vegan', 'Vegetarian', 'Omnivore'].map((d) {
-                    final selected = _diet == d;
-                    return ChoiceChip(
-                      label: Text(d),
-                      selected: selected,
-                      selectedColor: const Color(0xFF2FD4CB),
-                      labelStyle: TextStyle(color: selected ? const Color(0xFF042A2F) : Colors.white),
-                      backgroundColor: const Color(0xFF152228),
-                      showCheckmark: false,
-                      onSelected: (_) => setState(() => _diet = d),
-                    );
-                  }).toList(),
-                ),
-                const Spacer(),
-              ],
-            ),
-          ),
-          _frame(
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 22),
-                const Text('Pick your meal style',
-                    style: TextStyle(fontSize: 34, fontWeight: FontWeight.w700, color: Colors.white)),
-                const SizedBox(height: 8),
-                const Text('Visual cards like in Figma onboarding 3', style: TextStyle(color: Colors.white70)),
-                const SizedBox(height: 16),
-                _planCard('Balanced', 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400', 'Everyday mix, broad variety'),
-                _planCard('High Protein', 'https://images.unsplash.com/photo-1604908177073-518c7c54f9b1?w=400', 'More protein-focused recipes'),
-                _planCard('Quick & Easy', 'https://images.unsplash.com/photo-1498837167922-ddd27525d352?w=400', 'Fast recipes for busy days'),
-                const Spacer(),
-              ],
-            ),
-          ),
-          _frame(
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 22),
-                const Text('What\'s your goal?',
-                    style: TextStyle(fontSize: 34, fontWeight: FontWeight.w700, color: Colors.white)),
-                const SizedBox(height: 8),
-                const Text('This helps the app prioritize recipes', style: TextStyle(color: Colors.white70)),
-                const SizedBox(height: 20),
-                Wrap(
-                  spacing: 10,
-                  runSpacing: 10,
-                  children: ['Fast', 'High-protein', 'Budget-friendly', 'Low-carb', 'Comfort'].map((g) {
-                    final selected = _goals.contains(g);
-                    return FilterChip(
-                      label: Text(g),
-                      selected: selected,
-                      selectedColor: const Color(0xFF2FD4CB),
-                      labelStyle: TextStyle(color: selected ? const Color(0xFF042A2F) : Colors.white),
-                      backgroundColor: const Color(0xFF152228),
-                      showCheckmark: false,
-                      onSelected: (s) => setState(() => s ? _goals.add(g) : _goals.remove(g)),
-                    );
-                  }).toList(),
-                ),
-                const Spacer(),
-              ],
-            ),
-          ),
-          _frame(
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 22),
-                const Text('Allergens', style: TextStyle(fontSize: 34, fontWeight: FontWeight.w700, color: Colors.white)),
-                const SizedBox(height: 8),
-                const Text('Select what should be excluded', style: TextStyle(color: Colors.white70)),
-                const SizedBox(height: 20),
-                Wrap(
-                  spacing: 10,
-                  runSpacing: 10,
-                  children: ['Gluten', 'Nuts', 'Lactose', 'Soy', 'Shellfish', 'Eggs', 'Fish'].map((a) {
-                    final selected = _allergens.contains(a);
-                    return FilterChip(
-                      label: Text(a),
-                      selected: selected,
-                      selectedColor: const Color(0xFF2FD4CB),
-                      labelStyle: TextStyle(color: selected ? const Color(0xFF042A2F) : Colors.white),
-                      backgroundColor: const Color(0xFF152228),
-                      showCheckmark: false,
-                      onSelected: (s) => setState(() => s ? _allergens.add(a) : _allergens.remove(a)),
-                    );
-                  }).toList(),
-                ),
-                const Spacer(),
-              ],
-            ),
-          ),
-        ],
+        children: [_dietPage(), _allergenPage(), _goalsPage()],
       ),
     );
   }

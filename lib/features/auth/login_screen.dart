@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 
-import 'register_screen.dart';
-
 class LoginScreen extends StatefulWidget {
   final Future<void> Function() onLogin;
-  final Future<void> Function() onRegister;
+  final VoidCallback onOpenRegister;
 
-  const LoginScreen({super.key, required this.onLogin, required this.onRegister});
+  const LoginScreen({
+    super.key,
+    required this.onLogin,
+    required this.onOpenRegister,
+  });
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -15,6 +17,13 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final _email = TextEditingController();
   final _password = TextEditingController();
+
+  @override
+  void dispose() {
+    _email.dispose();
+    _password.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,32 +42,35 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const SizedBox(height: 70),
+                const SizedBox(height: 72),
                 Center(
                   child: Container(
-                    width: 120,
-                    height: 120,
+                    width: 112,
+                    height: 112,
                     decoration: BoxDecoration(
                       color: const Color(0xFF2FD4CB),
                       borderRadius: BorderRadius.circular(20),
                     ),
-                    child: const Icon(Icons.ramen_dining, color: Color(0xFF063F43), size: 56),
+                    child: const Icon(Icons.ramen_dining, color: Color(0xFF063F43), size: 52),
                   ),
                 ),
                 const SizedBox(height: 56),
-                const Text('Login', style: TextStyle(fontSize: 40, fontWeight: FontWeight.w700, color: Color(0xFF2FD4CB))),
-                const SizedBox(height: 22),
-                _InputField(controller: _email, hint: 'Email', icon: Icons.mail_outline),
-                const SizedBox(height: 14),
-                _InputField(controller: _password, hint: 'Password', icon: Icons.lock_outline, obscure: true),
+                const Text(
+                  'Login',
+                  style: TextStyle(fontSize: 42, fontWeight: FontWeight.w700, color: Color(0xFF2FD4CB)),
+                ),
+                const SizedBox(height: 20),
+                _AuthInput(controller: _email, hint: 'Email', icon: Icons.mail_outline),
+                const SizedBox(height: 12),
+                _AuthInput(controller: _password, hint: 'Password', icon: Icons.lock_outline, obscure: true),
                 const SizedBox(height: 10),
                 const Align(
                   alignment: Alignment.centerRight,
-                  child: Text('Forgot Password', style: TextStyle(color: Color(0xFF2FD4CB), fontWeight: FontWeight.w500)),
+                  child: Text('Forgot Password', style: TextStyle(color: Color(0xFF2FD4CB), fontWeight: FontWeight.w600)),
                 ),
                 const SizedBox(height: 18),
                 SizedBox(
-                  height: 50,
+                  height: 52,
                   child: ElevatedButton(
                     onPressed: () async => widget.onLogin(),
                     style: ElevatedButton.styleFrom(
@@ -66,10 +78,10 @@ class _LoginScreenState extends State<LoginScreen> {
                       foregroundColor: const Color(0xFF042A2F),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                     ),
-                    child: const Text('Login', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
+                    child: const Text('Login', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800)),
                   ),
                 ),
-                const SizedBox(height: 28),
+                const SizedBox(height: 26),
                 const Row(
                   children: [
                     Expanded(child: Divider(color: Color(0xFF4D5B60))),
@@ -80,15 +92,15 @@ class _LoginScreenState extends State<LoginScreen> {
                     Expanded(child: Divider(color: Color(0xFF4D5B60))),
                   ],
                 ),
-                const SizedBox(height: 18),
-                Row(
+                const SizedBox(height: 16),
+                const Row(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: const [
-                    _SocialCircle(label: 'f', color: Color(0xFF1877F2)),
-                    SizedBox(width: 22),
-                    _SocialCircle(label: 'G', color: Color(0xFFDB4437)),
-                    SizedBox(width: 22),
-                    _SocialCircle(label: '', color: Colors.white),
+                  children: [
+                    _SocialIcon(label: 'f', color: Color(0xFF1877F2)),
+                    SizedBox(width: 18),
+                    _SocialIcon(label: 'G', color: Color(0xFFDB4437)),
+                    SizedBox(width: 18),
+                    _SocialIcon(label: '', color: Colors.white),
                   ],
                 ),
                 const Spacer(),
@@ -97,17 +109,9 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Text('Don\'t have an account? ', style: TextStyle(color: Colors.white70)),
+                      const Text('Dont have an account? ', style: TextStyle(color: Colors.white70)),
                       GestureDetector(
-                        onTap: () {
-                          Navigator.of(context).push(
-                            PageRouteBuilder(
-                              pageBuilder: (_, __, ___) => RegisterScreen(onRegister: widget.onRegister),
-                              transitionsBuilder: (_, animation, __, child) => FadeTransition(opacity: animation, child: child),
-                              transitionDuration: const Duration(milliseconds: 220),
-                            ),
-                          );
-                        },
+                        onTap: widget.onOpenRegister,
                         child: const Text('Sign Up', style: TextStyle(color: Color(0xFF2FD4CB), fontWeight: FontWeight.w700)),
                       ),
                     ],
@@ -122,21 +126,21 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 }
 
-class _InputField extends StatelessWidget {
+class _AuthInput extends StatelessWidget {
   final TextEditingController controller;
   final String hint;
   final IconData icon;
   final bool obscure;
 
-  const _InputField({required this.controller, required this.hint, required this.icon, this.obscure = false});
+  const _AuthInput({required this.controller, required this.hint, required this.icon, this.obscure = false});
 
   @override
   Widget build(BuildContext context) {
     return Container(
       height: 56,
       decoration: BoxDecoration(
-        border: Border.all(color: const Color(0xFF38484D), width: 1.3),
         borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: const Color(0xFF38484D), width: 1.3),
       ),
       child: TextField(
         controller: controller,
@@ -144,9 +148,9 @@ class _InputField extends StatelessWidget {
         style: const TextStyle(color: Colors.white),
         decoration: InputDecoration(
           border: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
           hintText: hint,
           hintStyle: const TextStyle(color: Colors.white70),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
           prefixIcon: Icon(icon, color: Colors.white70),
         ),
       ),
@@ -154,11 +158,11 @@ class _InputField extends StatelessWidget {
   }
 }
 
-class _SocialCircle extends StatelessWidget {
+class _SocialIcon extends StatelessWidget {
   final String label;
   final Color color;
 
-  const _SocialCircle({required this.label, required this.color});
+  const _SocialIcon({required this.label, required this.color});
 
   @override
   Widget build(BuildContext context) {
@@ -170,7 +174,7 @@ class _SocialCircle extends StatelessWidget {
         borderRadius: BorderRadius.circular(10),
       ),
       child: Center(
-        child: Text(label, style: TextStyle(color: color, fontWeight: FontWeight.w800, fontSize: 26)),
+        child: Text(label, style: TextStyle(color: color, fontSize: 26, fontWeight: FontWeight.w800)),
       ),
     );
   }

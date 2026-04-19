@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'core/storage/app_prefs.dart';
 import 'core/theme/app_theme.dart';
 import 'features/auth/login_screen.dart';
+import 'features/auth/register_screen.dart';
 import 'features/home/home_screen.dart';
 import 'features/onboarding/onboarding_screen.dart';
 
@@ -35,6 +36,7 @@ class _AppGateState extends State<_AppGate> {
   bool _loading = true;
   bool _loggedIn = false;
   bool _onboardingDone = false;
+  bool _showRegister = false;
 
   @override
   void initState() {
@@ -59,7 +61,10 @@ class _AppGateState extends State<_AppGate> {
 
   Future<void> _login() async {
     await AppPrefs.setLoggedIn(true);
-    setState(() => _loggedIn = true);
+    setState(() {
+      _loggedIn = true;
+      _showRegister = false;
+    });
   }
 
   Future<void> _register() async {
@@ -68,6 +73,7 @@ class _AppGateState extends State<_AppGate> {
     setState(() {
       _loggedIn = true;
       _onboardingDone = false;
+      _showRegister = false;
     });
   }
 
@@ -84,7 +90,16 @@ class _AppGateState extends State<_AppGate> {
     }
 
     if (!_loggedIn) {
-      return LoginScreen(onLogin: _login, onRegister: _register);
+      if (_showRegister) {
+        return RegisterScreen(
+          onRegister: _register,
+          onBackToLogin: () => setState(() => _showRegister = false),
+        );
+      }
+      return LoginScreen(
+        onLogin: _login,
+        onOpenRegister: () => setState(() => _showRegister = true),
+      );
     }
 
     if (!_onboardingDone) {
