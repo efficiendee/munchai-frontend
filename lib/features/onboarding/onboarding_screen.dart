@@ -261,17 +261,20 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             style: TextStyle(color: Colors.white70, fontSize: 16, fontWeight: FontWeight.w400, height: 1.3),
           ),
           const SizedBox(height: 26),
-          Wrap(
-            spacing: 21,
-            runSpacing: 24,
-            children: _allergenOptions.map((a) {
-              final selected = _allergens.contains(a);
-              return _allergenTile(
-                label: a,
-                selected: selected,
-                onTap: () => setState(() => selected ? _allergens.remove(a) : _allergens.add(a)),
-              );
-            }).toList(),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 4),
+            child: Wrap(
+              spacing: 21,
+              runSpacing: 24,
+              children: _allergenOptions.map((a) {
+                final selected = _allergens.contains(a);
+                return _allergenTile(
+                  label: a,
+                  selected: selected,
+                  onTap: () => setState(() => selected ? _allergens.remove(a) : _allergens.add(a)),
+                );
+              }).toList(),
+            ),
           ),
           const Spacer(),
         ],
