@@ -13,6 +13,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   final _controller = PageController();
   int _index = 0;
 
+  bool _acceptedTerms = false;
+  bool _acceptedPersonalization = false;
+
   String _diet = 'Omnivore';
   final Set<String> _allergens = {};
   final Set<String> _goals = {'Fast'};
@@ -21,12 +24,15 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   static const _goalOptions = ['Fast', 'Budget-friendly', 'Healthy', 'High-protein', 'Low-carb', 'Low-fat', 'High-fiber', 'Low -sugar'];
 
   Future<void> _next() async {
-    if (_index < 2) {
+    if (_index == 0 && !(_acceptedTerms && _acceptedPersonalization)) return;
+
+    if (_index < 3) {
       await _controller.nextPage(duration: const Duration(milliseconds: 240), curve: Curves.easeOut);
       return;
     }
 
-    final profile = 'diet=$_diet; allergens=${_allergens.join(',')}; goals=${_goals.join(',')}';
+    final profile =
+        'diet=$_diet; allergens=${_allergens.join(',')}; goals=${_goals.join(',')}; acceptedTerms=$_acceptedTerms; acceptedPersonalization=$_acceptedPersonalization';
     await widget.onComplete(profile);
   }
 
@@ -65,10 +71,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 width: double.infinity,
                 height: 52,
                 child: ElevatedButton(
-                  onPressed: _next,
+                  onPressed: (_index == 0 && !(_acceptedTerms && _acceptedPersonalization)) ? null : _next,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF2FD4CB),
+                    disabledBackgroundColor: const Color(0xFF1D4144),
                     foregroundColor: const Color(0xFF042A2F),
+                    disabledForegroundColor: const Color(0xFF9AB7B6),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                   ),
                   child: Text(ctaLabel, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800)),
@@ -78,6 +86,78 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _welcomePage() {
+    return _shell(
+      ctaLabel: 'Start setup!',
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(height: 12),
+          Center(
+            child: Container(
+              width: 64,
+              height: 64,
+              decoration: BoxDecoration(
+                color: const Color(0xFF2FD4CB),
+                borderRadius: BorderRadius.circular(14),
+              ),
+              child: const Icon(Icons.ramen_dining, color: Color(0xFF063F43), size: 30),
+            ),
+          ),
+          const SizedBox(height: 48),
+          const Text('Hi, welcome to Y.AI', style: TextStyle(color: Colors.white, fontSize: 34, fontWeight: FontWeight.w700)),
+          const SizedBox(height: 8),
+          const Text(
+            'Personalized recipes that fit your diet, time, budget, and what’s in your kitchen.',
+            style: TextStyle(color: Colors.white70, fontSize: 14, height: 1.4),
+          ),
+          const SizedBox(height: 22),
+          _consentRow(
+            checked: _acceptedTerms,
+            onTap: () => setState(() => _acceptedTerms = !_acceptedTerms),
+            text: 'I’ve read and agree to the Privacy Policy and Terms.',
+          ),
+          const SizedBox(height: 12),
+          _consentRow(
+            checked: _acceptedPersonalization,
+            onTap: () => setState(() => _acceptedPersonalization = !_acceptedPersonalization),
+            text: 'I consent to my data being used to personalize recommendations. I can withdraw consent anytime in Settings.',
+          ),
+          const SizedBox(height: 18),
+          const Text(
+            'Allergens are hard filters; everything else just improves ranking. You’re in control.',
+            style: TextStyle(color: Colors.white70, fontSize: 13.5, height: 1.45),
+          ),
+          const Spacer(),
+        ],
+      ),
+    );
+  }
+
+  Widget _consentRow({required bool checked, required VoidCallback onTap, required String text}) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 24,
+            height: 24,
+            margin: const EdgeInsets.only(top: 1),
+            decoration: BoxDecoration(
+              color: checked ? const Color(0xFF2FD4CB) : Colors.transparent,
+              borderRadius: BorderRadius.circular(6),
+              border: Border.all(color: checked ? const Color(0xFF2FD4CB) : const Color(0xFF4D5B60), width: 1.5),
+            ),
+            child: checked ? const Icon(Icons.check, size: 16, color: Color(0xFF042A2F)) : null,
+          ),
+          const SizedBox(width: 10),
+          Expanded(child: Text(text, style: const TextStyle(color: Colors.white70, fontSize: 13.5, height: 1.4))),
+        ],
       ),
     );
   }
@@ -246,7 +326,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       body: PageView(
         controller: _controller,
         onPageChanged: (i) => setState(() => _index = i),
-        children: [_dietPage(), _allergenPage(), _goalsPage()],
+        children: [_welcomePage(), _dietPage(), _allergenPage(), _goalsPage()],
       ),
     );
   }
