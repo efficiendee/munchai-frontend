@@ -338,37 +338,60 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const SizedBox(height: 6),
-          const Text('What are your goals?', style: TextStyle(color: Colors.white, fontSize: 34, fontWeight: FontWeight.w700)),
-          const SizedBox(height: 8),
-          const Text('Choose up to 3 priorities to shape your recipes.', style: TextStyle(color: Colors.white70)),
-          const SizedBox(height: 20),
-          Wrap(
-            spacing: 10,
-            runSpacing: 10,
-            children: _goalOptions.map((g) {
-              final selected = _goals.contains(g);
-              return FilterChip(
-                label: Text(g),
-                selected: selected,
-                selectedColor: const Color(0xFF2FD4CB),
-                labelStyle: TextStyle(color: selected ? const Color(0xFF042A2F) : Colors.white),
-                backgroundColor: const Color(0xFF152228),
-                showCheckmark: false,
-                onSelected: (s) {
-                  setState(() {
-                    if (s) {
-                      if (_goals.length < 3) _goals.add(g);
-                    } else {
-                      _goals.remove(g);
-                    }
-                  });
-                },
-              );
-            }).toList(),
+          const SizedBox(height: 2),
+          const Text('What are your goals?', style: TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.w600)),
+          const SizedBox(height: 16),
+          const Text(
+            'Choose up to 3 priorities to shape your recipes.',
+            style: TextStyle(color: Colors.white70, fontSize: 16, fontWeight: FontWeight.w400, height: 1.3),
           ),
+          const SizedBox(height: 24),
+          ..._goalOptions.map((g) {
+            final selected = _goals.contains(g);
+            return _goalRow(
+              label: g,
+              selected: selected,
+              onTap: () {
+                setState(() {
+                  if (selected) {
+                    _goals.remove(g);
+                  } else if (_goals.length < 3) {
+                    _goals.add(g);
+                  }
+                });
+              },
+            );
+          }),
           const Spacer(),
         ],
+      ),
+    );
+  }
+
+  Widget _goalRow({required String label, required bool selected, required VoidCallback onTap}) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
+          height: 36,
+          width: double.infinity,
+          decoration: BoxDecoration(
+            color: selected ? const Color(0xFF2FD4CB) : const Color(0xFF152228),
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: selected ? const Color(0xFF2FD4CB) : const Color(0xFF29363C), width: 1.0),
+          ),
+          alignment: Alignment.centerLeft,
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          child: Text(
+            label,
+            style: TextStyle(
+              color: selected ? const Color(0xFF042A2F) : Colors.white,
+              fontSize: 16,
+              fontWeight: FontWeight.w400,
+            ),
+          ),
+        ),
       ),
     );
   }
