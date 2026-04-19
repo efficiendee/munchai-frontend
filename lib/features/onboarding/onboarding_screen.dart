@@ -371,26 +371,40 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   Widget _goalRow({required String label, required bool selected, required VoidCallback onTap}) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
-      child: GestureDetector(
-        onTap: onTap,
-        child: Container(
-          height: 36,
-          width: double.infinity,
-          decoration: BoxDecoration(
-            color: selected ? const Color(0xFF2FD4CB) : const Color(0xFF152228),
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: selected ? const Color(0xFF2FD4CB) : const Color(0xFF29363C), width: 1.0),
-          ),
-          alignment: Alignment.centerLeft,
-          padding: const EdgeInsets.symmetric(horizontal: 12),
-          child: Text(
-            label,
-            style: TextStyle(
-              color: selected ? const Color(0xFF042A2F) : Colors.white,
-              fontSize: 16,
-              fontWeight: FontWeight.w400,
+      child: SizedBox(
+        height: 36,
+        child: Row(
+          children: [
+            GestureDetector(
+              onTap: onTap,
+              child: Container(
+                width: 22,
+                height: 22,
+                decoration: BoxDecoration(
+                  color: selected ? const Color(0xFF2FD4CB) : Colors.transparent,
+                  borderRadius: BorderRadius.circular(6),
+                  border: Border.all(
+                    color: selected ? const Color(0xFF2FD4CB) : const Color(0xFF4D5B60),
+                    width: 1.4,
+                  ),
+                ),
+                child: selected
+                    ? const Icon(Icons.check, size: 14, color: Color(0xFF042A2F))
+                    : null,
+              ),
             ),
-          ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                label,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w400,
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
