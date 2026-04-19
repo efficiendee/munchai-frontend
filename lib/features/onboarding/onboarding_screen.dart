@@ -20,7 +20,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   final Set<String> _allergens = {};
   final Set<String> _goals = {'Fast'};
 
-  static const _allergenOptions = ['Gluten', 'Crustaceans', 'Egg', 'Soy', 'Peanut', 'Fish', 'Dairy'];
+  static const _allergenOptions = ['Gluten', 'Crustaceans', 'Egg', 'Fish', 'Peanut', 'Soy', 'Dairy'];
   static const _goalOptions = ['Fast', 'Budget-friendly', 'Healthy', 'High-protein', 'Low-carb', 'Low-fat', 'High-fiber', 'Low -sugar'];
 
   Future<void> _next() async {
@@ -253,29 +253,63 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const SizedBox(height: 6),
-          const Text('Any allergens?', style: TextStyle(color: Colors.white, fontSize: 34, fontWeight: FontWeight.w700)),
-          const SizedBox(height: 8),
-          const Text('Mark anything to avoid. We’ll remove those ingredients and suggest swaps.', style: TextStyle(color: Colors.white70)),
-          const SizedBox(height: 20),
+          const SizedBox(height: 2),
+          const Text('Any allergens?', style: TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.w600)),
+          const SizedBox(height: 16),
+          const Text(
+            'Mark anything to avoid. We’ll remove those ingredients and suggest swaps.',
+            style: TextStyle(color: Colors.white70, fontSize: 16, fontWeight: FontWeight.w400, height: 1.3),
+          ),
+          const SizedBox(height: 26),
           Wrap(
-            spacing: 10,
-            runSpacing: 10,
+            spacing: 21,
+            runSpacing: 24,
             children: _allergenOptions.map((a) {
               final selected = _allergens.contains(a);
-              return FilterChip(
-                label: Text(a),
+              return _allergenTile(
+                label: a,
                 selected: selected,
-                selectedColor: const Color(0xFF2FD4CB),
-                labelStyle: TextStyle(color: selected ? const Color(0xFF042A2F) : Colors.white),
-                backgroundColor: const Color(0xFF152228),
-                showCheckmark: false,
-                onSelected: (s) => setState(() => s ? _allergens.add(a) : _allergens.remove(a)),
+                onTap: () => setState(() => selected ? _allergens.remove(a) : _allergens.add(a)),
               );
             }).toList(),
           ),
           const Spacer(),
         ],
+      ),
+    );
+  }
+
+  Widget _allergenTile({required String label, required bool selected, required VoidCallback onTap}) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 100,
+        height: 136,
+        decoration: BoxDecoration(
+          color: selected ? const Color(0xFF2FD4CB) : const Color(0xFF152228),
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: selected ? const Color(0xFF2FD4CB) : const Color(0xFF29363C), width: 1.2),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.no_food_rounded,
+              color: selected ? const Color(0xFF042A2F) : const Color(0xFF5E7078),
+              size: 26,
+            ),
+            const SizedBox(height: 12),
+            Text(
+              label,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: selected ? const Color(0xFF042A2F) : Colors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.w400,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
