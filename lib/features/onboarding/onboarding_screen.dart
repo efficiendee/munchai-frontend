@@ -261,20 +261,36 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             style: TextStyle(color: Colors.white70, fontSize: 16, fontWeight: FontWeight.w400, height: 1.3),
           ),
           const SizedBox(height: 26),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 4),
-            child: Wrap(
-              spacing: 21,
-              runSpacing: 24,
-              children: _allergenOptions.map((a) {
-                final selected = _allergens.contains(a);
-                return _allergenTile(
-                  label: a,
-                  selected: selected,
-                  onTap: () => setState(() => selected ? _allergens.remove(a) : _allergens.add(a)),
-                );
-              }).toList(),
-            ),
+          LayoutBuilder(
+            builder: (context, constraints) {
+              const columns = 3;
+              const rowGap = 24.0;
+              final gap = constraints.maxWidth / 28; // same gap for left/right + between tiles
+              final tileWidth = (constraints.maxWidth - (gap * (columns + 1))) / columns;
+              final ratio = tileWidth / 136;
+
+              return GridView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: _allergenOptions.length,
+                padding: EdgeInsets.all(gap),
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: columns,
+                  crossAxisSpacing: gap,
+                  mainAxisSpacing: rowGap,
+                  childAspectRatio: ratio,
+                ),
+                itemBuilder: (context, index) {
+                  final a = _allergenOptions[index];
+                  final selected = _allergens.contains(a);
+                  return _allergenTile(
+                    label: a,
+                    selected: selected,
+                    onTap: () => setState(() => selected ? _allergens.remove(a) : _allergens.add(a)),
+                  );
+                },
+              );
+            },
           ),
           const Spacer(),
         ],
@@ -286,7 +302,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        width: 100,
         height: 136,
         decoration: BoxDecoration(
           color: selected ? const Color(0xFF2FD4CB) : const Color(0xFF152228),
