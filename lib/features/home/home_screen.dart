@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../recipe_detail/recipe_detail_screen.dart';
 import '../../core/data/dummy_recipes.dart';
-import 'camera_capture_screen.dart';
 import 'settings_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -21,11 +21,34 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final List<String> _ingredients = ['Tomaten', 'Eier', 'Spinat'];
+  final ImagePicker _imagePicker = ImagePicker();
 
   Future<void> _openCamera() async {
-    await Navigator.of(context).push(
-      MaterialPageRoute(builder: (_) => const CameraCaptureScreen()),
-    );
+    try {
+      final image = await _imagePicker.pickImage(
+        source: ImageSource.camera,
+        preferredCameraDevice: CameraDevice.rear,
+        imageQuality: 88,
+      );
+
+      if (!mounted) return;
+
+      if (image == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Keine Aufnahme ausgewählt.')),
+        );
+        return;
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Foto erfolgreich aufgenommen.')),
+      );
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Kamera konnte nicht geöffnet werden. Prüfe Berechtigungen.')),
+      );
+    }
   }
 
   Future<void> _openManualEntry() async {
