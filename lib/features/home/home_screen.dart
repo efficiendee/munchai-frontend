@@ -6,7 +6,14 @@ import 'camera_capture_screen.dart';
 import 'settings_screen.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  final bool isDarkMode;
+  final ValueChanged<bool> onThemeChanged;
+
+  const HomeScreen({
+    super.key,
+    required this.isDarkMode,
+    required this.onThemeChanged,
+  });
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -83,7 +90,12 @@ class _HomeScreenState extends State<HomeScreen> {
                       children: [
                         IconButton(
                           onPressed: () => Navigator.of(context).push(
-                            MaterialPageRoute(builder: (_) => const SettingsScreen()),
+                            MaterialPageRoute(
+                              builder: (_) => SettingsScreen(
+                                isDarkMode: widget.isDarkMode,
+                                onThemeChanged: widget.onThemeChanged,
+                              ),
+                            ),
                           ),
                           padding: EdgeInsets.zero,
                           icon: const Icon(Icons.menu, color: Colors.white),

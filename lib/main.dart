@@ -11,22 +11,44 @@ void main() {
   runApp(const MunchAiApp());
 }
 
-class MunchAiApp extends StatelessWidget {
+class MunchAiApp extends StatefulWidget {
   const MunchAiApp({super.key});
+
+  @override
+  State<MunchAiApp> createState() => _MunchAiAppState();
+}
+
+class _MunchAiAppState extends State<MunchAiApp> {
+  bool _isDarkMode = true;
+
+  void _setDarkMode(bool value) {
+    setState(() => _isDarkMode = value);
+  }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'munch.ai',
       debugShowCheckedModeBanner: false,
-      theme: AppTheme.dark,
-      home: const _AppGate(),
+      theme: AppTheme.light,
+      darkTheme: AppTheme.dark,
+      themeMode: _isDarkMode ? ThemeMode.dark : ThemeMode.light,
+      home: _AppGate(
+        isDarkMode: _isDarkMode,
+        onThemeChanged: _setDarkMode,
+      ),
     );
   }
 }
 
 class _AppGate extends StatefulWidget {
-  const _AppGate();
+  final bool isDarkMode;
+  final ValueChanged<bool> onThemeChanged;
+
+  const _AppGate({
+    required this.isDarkMode,
+    required this.onThemeChanged,
+  });
 
   @override
   State<_AppGate> createState() => _AppGateState();
@@ -106,6 +128,9 @@ class _AppGateState extends State<_AppGate> {
       return OnboardingScreen(onComplete: _finishOnboarding);
     }
 
-    return const HomeScreen();
+    return HomeScreen(
+      isDarkMode: widget.isDarkMode,
+      onThemeChanged: widget.onThemeChanged,
+    );
   }
 }
