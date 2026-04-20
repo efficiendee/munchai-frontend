@@ -44,12 +44,16 @@ class SettingsScreen extends StatelessWidget {
               const SizedBox(height: 24),
               Row(
                 children: [
-                  Container(
-                    width: 140,
-                    height: 140,
-                    decoration: BoxDecoration(
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(14),
+                    child: Container(
+                      width: 140,
+                      height: 140,
                       color: isDark ? const Color(0xFF172127) : const Color(0xFFE4EAEE),
-                      borderRadius: BorderRadius.circular(14),
+                      child: Image.asset(
+                        'assets/images/profile_dave.jpg',
+                        fit: BoxFit.cover,
+                      ),
                     ),
                   ),
                   const SizedBox(width: 24),
@@ -59,7 +63,7 @@ class SettingsScreen extends StatelessWidget {
                       children: [
                         Text('Personalized recipes for you.', style: TextStyle(color: muted, fontSize: 16, fontWeight: FontWeight.w400)),
                         const SizedBox(height: 18),
-                        Text('Hi, Jonas', style: TextStyle(color: fg, fontSize: 20, fontWeight: FontWeight.w600)),
+                        Text('Hi, Dave', style: TextStyle(color: fg, fontSize: 20, fontWeight: FontWeight.w600)),
                         const SizedBox(height: 12),
                         Row(
                           children: [
