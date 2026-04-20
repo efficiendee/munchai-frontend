@@ -1,85 +1,422 @@
 import 'package:flutter/material.dart';
 
-import '../home/home_screen.dart';
-
 class OnboardingScreen extends StatefulWidget {
-  const OnboardingScreen({super.key});
+  final Future<void> Function(String tasteProfile) onComplete;
+
+  const OnboardingScreen({super.key, required this.onComplete});
 
   @override
   State<OnboardingScreen> createState() => _OnboardingScreenState();
 }
 
 class _OnboardingScreenState extends State<OnboardingScreen> {
-  String _diet = 'Omnivore';
-  final Set<String> _allergens = <String>{};
-  final Set<String> _goals = <String>{'Fast'};
+  final _controller = PageController();
+  int _index = 0;
 
-  static const diets = ['Vegan', 'Vegetarian', 'Omnivore'];
-  static const allergens = ['Gluten', 'Nuts', 'Lactose', 'Soy'];
-  static const goals = ['Budget-friendly', 'High-protein', 'Fast'];
+  bool _acceptedTerms = false;
+  bool _acceptedPersonalization = false;
+
+  String _diet = 'Omnivore';
+  final Set<String> _allergens = {};
+  final Set<String> _goals = {'Fast'};
+
+  static const _allergenOptions = ['Gluten', 'Crustaceans', 'Egg', 'Fish', 'Peanut', 'Soy', 'Dairy'];
+  static const _goalOptions = ['Fast', 'Budget-friendly', 'Healthy', 'High-protein', 'Low-carb', 'Low-fat', 'High-fiber', 'Low -sugar'];
+
+  Future<void> _next() async {
+    if (_index == 0 && !(_acceptedTerms && _acceptedPersonalization)) return;
+
+    if (_index < 3) {
+      await _controller.nextPage(duration: const Duration(milliseconds: 240), curve: Curves.easeOut);
+      return;
+    }
+
+    final profile =
+        'diet=$_diet; allergens=${_allergens.join(',')}; goals=${_goals.join(',')}; acceptedTerms=$_acceptedTerms; acceptedPersonalization=$_acceptedPersonalization';
+    await widget.onComplete(profile);
+  }
+
+  Future<void> _back() async {
+    if (_index > 0) {
+      await _controller.previousPage(duration: const Duration(milliseconds: 220), curve: Curves.easeOut);
+    }
+  }
+
+  Widget _shell({required Widget child, required String ctaLabel}) {
+    return Container(
+      color: const Color(0xFF0F1216),
+      child: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Column(
+            children: [
+              const SizedBox(height: 10),
+              Row(
+                children: [
+                  IconButton(
+                    onPressed: _index > 0 ? _back : null,
+                    icon: Icon(Icons.arrow_back_ios_new_rounded, color: _index > 0 ? Colors.white70 : Colors.transparent),
+                  ),
+                  const Spacer(),
+                ],
+              ),
+              Expanded(child: child),
+              SizedBox(
+                width: double.infinity,
+                height: 52,
+                child: ElevatedButton(
+                  onPressed: (_index == 0 && !(_acceptedTerms && _acceptedPersonalization)) ? null : _next,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF2FD4CB),
+                    disabledBackgroundColor: const Color(0xFF1D4144),
+                    foregroundColor: const Color(0xFF042A2F),
+                    disabledForegroundColor: const Color(0xFF9AB7B6),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                  ),
+                  child: Text(ctaLabel, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800)),
+                ),
+              ),
+              const SizedBox(height: 20),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _welcomePage() {
+    return _shell(
+      ctaLabel: 'Start setup!',
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(height: 12),
+          Center(
+            child: Container(
+              width: 64,
+              height: 64,
+              decoration: BoxDecoration(
+                color: const Color(0xFF2FD4CB),
+                borderRadius: BorderRadius.circular(14),
+              ),
+              child: const Icon(Icons.ramen_dining, color: Color(0xFF063F43), size: 30),
+            ),
+          ),
+          const SizedBox(height: 48),
+          const Text('Hi, welcome to Y.AI', style: TextStyle(color: Colors.white, fontSize: 34, fontWeight: FontWeight.w700)),
+          const SizedBox(height: 8),
+          const Text(
+            'Personalized recipes that fit your diet, time, budget, and what’s in your kitchen.',
+            style: TextStyle(color: Colors.white70, fontSize: 14, height: 1.4),
+          ),
+          const SizedBox(height: 22),
+          _consentRow(
+            checked: _acceptedTerms,
+            onTap: () => setState(() => _acceptedTerms = !_acceptedTerms),
+            text: 'I’ve read and agree to the Privacy Policy and Terms.',
+          ),
+          const SizedBox(height: 12),
+          _consentRow(
+            checked: _acceptedPersonalization,
+            onTap: () => setState(() => _acceptedPersonalization = !_acceptedPersonalization),
+            text: 'I consent to my data being used to personalize recommendations. I can withdraw consent anytime in Settings.',
+          ),
+          const SizedBox(height: 18),
+          const Text(
+            'Allergens are hard filters; everything else just improves ranking. You’re in control.',
+            style: TextStyle(color: Colors.white70, fontSize: 13.5, height: 1.45),
+          ),
+          const Spacer(),
+        ],
+      ),
+    );
+  }
+
+  Widget _consentRow({required bool checked, required VoidCallback onTap, required String text}) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 24,
+            height: 24,
+            margin: const EdgeInsets.only(top: 1),
+            decoration: BoxDecoration(
+              color: checked ? const Color(0xFF2FD4CB) : Colors.transparent,
+              borderRadius: BorderRadius.circular(6),
+              border: Border.all(color: checked ? const Color(0xFF2FD4CB) : const Color(0xFF4D5B60), width: 1.5),
+            ),
+            child: checked ? const Icon(Icons.check, size: 16, color: Color(0xFF042A2F)) : null,
+          ),
+          const SizedBox(width: 10),
+          Expanded(child: Text(text, style: const TextStyle(color: Colors.white70, fontSize: 13.5, height: 1.4))),
+        ],
+      ),
+    );
+  }
+
+  Widget _dietPage() {
+    return _shell(
+      ctaLabel: 'Next',
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(height: 2),
+          const Text(
+            'What’s your diet?',
+            style: TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.w600),
+          ),
+          const SizedBox(height: 16),
+          const Text(
+            'Select one. You can change this anytime.',
+            style: TextStyle(color: Colors.white70, fontSize: 16, fontWeight: FontWeight.w400),
+          ),
+          const SizedBox(height: 20),
+          _dietCard(
+            title: 'Omnivore',
+            subtitle: 'All foods included! You eat everything.',
+            image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400',
+          ),
+          _dietCard(
+            title: 'Vegetarian',
+            subtitle: 'Plant-based, with dairy/eggs allowed.',
+            image: 'https://images.unsplash.com/photo-1512058564366-c9e7b02f8bc7?w=400',
+          ),
+          _dietCard(
+            title: 'Vegan',
+            subtitle: '100% plant-based.',
+            image: 'https://images.unsplash.com/photo-1547592180-85f173990554?w=400',
+          ),
+          _dietCard(
+            title: 'Flexitarian',
+            subtitle: 'Primarily vegetarian, with flexible meat/fish options.',
+            image: 'https://images.unsplash.com/photo-1559847844-5315695dadae?w=400',
+          ),
+          const Spacer(),
+        ],
+      ),
+    );
+  }
+
+  Widget _dietCard({required String title, required String subtitle, required String image}) {
+    final selected = _diet == title;
+    return GestureDetector(
+      onTap: () => setState(() => _diet = title),
+      child: Container(
+        height: 96,
+        margin: const EdgeInsets.only(bottom: 10),
+        decoration: BoxDecoration(
+          color: const Color(0xFF162329),
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: selected ? const Color(0xFF2FD4CB) : const Color(0xFF29363C), width: 1.2),
+        ),
+        child: Row(
+          children: [
+            ClipRRect(
+              borderRadius: const BorderRadius.only(topLeft: Radius.circular(13), bottomLeft: Radius.circular(13)),
+              child: Image.network(
+                image,
+                width: 94,
+                height: 96,
+                fit: BoxFit.cover,
+                errorBuilder: (_, __, ___) => Container(
+                  width: 94,
+                  height: 96,
+                  color: const Color(0xFF223239),
+                  child: const Icon(Icons.fastfood, color: Color(0xFF2FD4CB)),
+                ),
+              ),
+            ),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(14, 10, 12, 8),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(title, style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w600)),
+                    const SizedBox(height: 8),
+                    Text(subtitle, style: const TextStyle(color: Colors.white70, fontSize: 16, height: 1.2)),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _allergenPage() {
+    return _shell(
+      ctaLabel: 'Next',
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(height: 2),
+          const Text('Any allergens?', style: TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.w600)),
+          const SizedBox(height: 16),
+          const Text(
+            'Mark anything to avoid. We’ll remove those ingredients and suggest swaps.',
+            style: TextStyle(color: Colors.white70, fontSize: 16, fontWeight: FontWeight.w400, height: 1.3),
+          ),
+          const SizedBox(height: 26),
+          LayoutBuilder(
+            builder: (context, constraints) {
+              const columns = 3;
+              const rowGap = 24.0;
+              final gap = constraints.maxWidth / 28; // same gap for left/right + between tiles
+              final tileWidth = (constraints.maxWidth - (gap * (columns + 1))) / columns;
+              final ratio = tileWidth / 136;
+
+              return GridView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: _allergenOptions.length,
+                padding: EdgeInsets.all(gap),
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: columns,
+                  crossAxisSpacing: gap,
+                  mainAxisSpacing: rowGap,
+                  childAspectRatio: ratio,
+                ),
+                itemBuilder: (context, index) {
+                  final a = _allergenOptions[index];
+                  final selected = _allergens.contains(a);
+                  return _allergenTile(
+                    label: a,
+                    selected: selected,
+                    onTap: () => setState(() => selected ? _allergens.remove(a) : _allergens.add(a)),
+                  );
+                },
+              );
+            },
+          ),
+          const Spacer(),
+        ],
+      ),
+    );
+  }
+
+  Widget _allergenTile({required String label, required bool selected, required VoidCallback onTap}) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        height: 136,
+        decoration: BoxDecoration(
+          color: selected ? const Color(0xFF2FD4CB) : const Color(0xFF152228),
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: selected ? const Color(0xFF2FD4CB) : const Color(0xFF29363C), width: 1.2),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.no_food_rounded,
+              color: selected ? const Color(0xFF042A2F) : const Color(0xFF5E7078),
+              size: 26,
+            ),
+            const SizedBox(height: 12),
+            Text(
+              label,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: selected ? const Color(0xFF042A2F) : Colors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.w400,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _goalsPage() {
+    return _shell(
+      ctaLabel: 'Let’s cook!',
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(height: 2),
+          const Text('What are your goals?', style: TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.w600)),
+          const SizedBox(height: 16),
+          const Text(
+            'Choose up to 3 priorities to shape your recipes.',
+            style: TextStyle(color: Colors.white70, fontSize: 16, fontWeight: FontWeight.w400, height: 1.3),
+          ),
+          const SizedBox(height: 24),
+          ..._goalOptions.map((g) {
+            final selected = _goals.contains(g);
+            return _goalRow(
+              label: g,
+              selected: selected,
+              onTap: () {
+                setState(() {
+                  if (selected) {
+                    _goals.remove(g);
+                  } else if (_goals.length < 3) {
+                    _goals.add(g);
+                  }
+                });
+              },
+            );
+          }),
+          const Spacer(),
+        ],
+      ),
+    );
+  }
+
+  Widget _goalRow({required String label, required bool selected, required VoidCallback onTap}) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: SizedBox(
+        height: 36,
+        child: Row(
+          children: [
+            GestureDetector(
+              onTap: onTap,
+              child: Container(
+                width: 22,
+                height: 22,
+                decoration: BoxDecoration(
+                  color: selected ? const Color(0xFF2FD4CB) : Colors.transparent,
+                  borderRadius: BorderRadius.circular(6),
+                  border: Border.all(
+                    color: selected ? const Color(0xFF2FD4CB) : const Color(0xFF4D5B60),
+                    width: 1.4,
+                  ),
+                ),
+                child: selected
+                    ? const Icon(Icons.check, size: 14, color: Color(0xFF042A2F))
+                    : null,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                label,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w400,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Setup your taste profile')),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          _Section(
-            title: 'Diet',
-            child: Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: diets
-                  .map((d) => ChoiceChip(
-                        label: Text(d),
-                        selected: _diet == d,
-                        onSelected: (_) => setState(() => _diet = d),
-                      ))
-                  .toList(),
-            ),
-          ),
-          _Section(
-            title: 'Allergens (hard filter)',
-            child: Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: allergens
-                  .map((a) => FilterChip(
-                        label: Text(a),
-                        selected: _allergens.contains(a),
-                        onSelected: (selected) => setState(() {
-                          selected ? _allergens.add(a) : _allergens.remove(a);
-                        }),
-                      ))
-                  .toList(),
-            ),
-          ),
-          _Section(
-            title: 'Goals',
-            child: Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: goals
-                  .map((g) => FilterChip(
-                        label: Text(g),
-                        selected: _goals.contains(g),
-                        onSelected: (selected) => setState(() {
-                          selected ? _goals.add(g) : _goals.remove(g);
-                        }),
-                      ))
-                  .toList(),
-            ),
-          ),
-          const SizedBox(height: 12),
-          ElevatedButton(
-            onPressed: () => Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (_) => const HomeScreen()),
-            ),
-            child: const Text('Continue'),
-          )
-        ],
+      body: PageView(
+        controller: _controller,
+        onPageChanged: (i) => setState(() => _index = i),
+        children: [_welcomePage(), _dietPage(), _allergenPage(), _goalsPage()],
       ),
     );
   }

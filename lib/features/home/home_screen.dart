@@ -1,12 +1,127 @@
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
-import '../../core/data/app_scope.dart';
-import '../../core/models/recipe.dart';
-import '../../core/theme/app_colors.dart';
 import '../recipe_detail/recipe_detail_screen.dart';
+import '../../core/data/dummy_recipes.dart';
+import 'settings_screen.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  final bool isDarkMode;
+  final ValueChanged<bool> onThemeChanged;
+
+  const HomeScreen({
+    super.key,
+    required this.isDarkMode,
+    required this.onThemeChanged,
+  });
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  final List<String> _ingredients = ['Tomaten', 'Eier', 'Spinat'];
+  final ImagePicker _imagePicker = ImagePicker();
+
+  Future<void> _openCamera() async {
+    try {
+      final image = await _imagePicker.pickImage(
+        source: ImageSource.camera,
+        preferredCameraDevice: CameraDevice.rear,
+        imageQuality: 88,
+      );
+
+      if (!mounted) return;
+
+      if (image == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Keine Aufnahme ausgewählt.')),
+        );
+        return;
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Foto erfolgreich aufgenommen.')),
+      );
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Kamera konnte nicht geöffnet werden. Prüfe Berechtigungen.')),
+      );
+    }
+  }
+
+  Future<void> _openManualEntry() async {
+    final controller = TextEditingController();
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final sheetBg = isDark ? const Color(0xFF151A22) : const Color(0xFFF4F7F8);
+    final fg = isDark ? Colors.white : const Color(0xFF0F1216);
+    final muted = isDark ? Colors.white70 : const Color(0xFF4E5961);
+    final fieldBg = isDark ? const Color(0xFF1A2328) : Colors.white;
+    final fieldBorder = isDark ? const Color(0xFF33414A) : const Color(0xFFD1DAE0);
+
+    await showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: sheetBg,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(22)),
+      ),
+      builder: (context) {
+        return Padding(
+          padding: EdgeInsets.fromLTRB(
+            16,
+            16,
+            16,
+            MediaQuery.of(context).viewInsets.bottom + 16,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                'Lebensmittel manuell hinzufügen',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: fg),
+              ),
+              const SizedBox(height: 10),
+              TextField(
+                controller: controller,
+                style: TextStyle(color: fg),
+                decoration: InputDecoration(
+                  hintText: 'z. B. Paprika, Reis, Joghurt',
+                  hintStyle: TextStyle(color: muted),
+                  filled: true,
+                  fillColor: fieldBg,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: fieldBorder),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: fieldBorder),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: const BorderSide(color: Color(0xFF2FD4CB), width: 1.3),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 12),
+              ElevatedButton(
+                onPressed: () {
+                  final value = controller.text.trim();
+                  if (value.isNotEmpty) {
+                    setState(() => _ingredients.add(value));
+                  }
+                  Navigator.pop(context);
+                },
+                child: const Text('Hinzufügen'),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -78,143 +193,148 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final fg = isDark ? Colors.white : const Color(0xFF0F1216);
+    final muted = isDark ? Colors.white70 : const Color(0xFF4E5961);
+    final chipBg = isDark ? const Color(0xFF152228) : const Color(0xFFE4EAEE);
+    final chipBorder = isDark ? const Color(0xFF2A3A40) : const Color(0xFFD1DAE0);
+    final bottomBg = isDark ? const Color(0xFF131A20) : Colors.white;
+    final bottomBorder = isDark ? const Color(0xFF263038) : const Color(0xFFD1DAE0);
+
     return Scaffold(
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
-        child: FutureBuilder<List<Recipe>>(
-          future: _recipesFuture,
-          builder: (context, snapshot) {
-            if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
-
-            final recipes = snapshot.data!.where((r) => r.minutes <= maxTime).toList();
-
-            return Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(24, 12, 12, 8),
-                  child: Row(
-                    children: [
-                      const Expanded(
-                        child: Text('Find your next\nfavorite meal',
-                            style: TextStyle(fontSize: 28, fontWeight: FontWeight.w600, height: 1.2)),
+        child: Stack(
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(24, 0, 24, 110),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(
+                    height: 48,
+                    child: Row(
+                      children: [
+                        IconButton(
+                          onPressed: () => Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (_) => SettingsScreen(
+                                isDarkMode: widget.isDarkMode,
+                                onThemeChanged: widget.onThemeChanged,
+                              ),
+                            ),
+                          ),
+                          padding: EdgeInsets.zero,
+                          icon: Icon(Icons.menu, color: fg),
+                        ),
+                        const Spacer(),
+                        Container(
+                          width: 48,
+                          height: 48,
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF2FD4CB),
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                          child: const Icon(Icons.ramen_dining, color: Color(0xFF063F43)),
+                        )
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 255),
+                  Align(
+                    alignment: Alignment.center,
+                    child: Text(
+                      'Whats in your fridge?',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontSize: 28, fontWeight: FontWeight.w600, color: fg),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Center(
+                    child: SizedBox(
+                      width: 195,
+                      child: Text(
+                        'Add your ingredients, choose filters, or get inspired',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(color: muted, height: 1.5, fontSize: 16),
                       ),
-                      IconButton(onPressed: _openFilters, icon: const Icon(Icons.tune_rounded, size: 28))
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  Center(
+                    child: Wrap(
+                      alignment: WrapAlignment.center,
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: _ingredients
+                          .map(
+                            (e) => Chip(
+                              label: Text(e, style: TextStyle(color: fg)),
+                              backgroundColor: chipBg,
+                              side: BorderSide(color: chipBorder),
+                            ),
+                          )
+                          .toList(),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Text('Recent Recipes', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: muted)),
+                  const SizedBox(height: 8),
+                  Expanded(
+                    child: ListView.builder(
+                      itemCount: dummyRecipes.length,
+                      itemBuilder: (context, index) {
+                        final recipe = dummyRecipes[index];
+                        return GestureDetector(
+                          onTap: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (_) => RecipeDetailScreen(recipe: recipe)),
+                          ),
+                          child: Card(
+                            margin: const EdgeInsets.only(bottom: 10),
+                            child: Padding(
+                              padding: const EdgeInsets.all(14),
+                              child: Text(recipe.title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: Padding(
+                padding: const EdgeInsets.only(bottom: 24),
+                child: Container(
+                  width: 224,
+                  height: 56,
+                  decoration: BoxDecoration(
+                    color: bottomBg,
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(color: bottomBorder),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      IconButton(
+                        onPressed: _openCamera,
+                        icon: Icon(Icons.photo_camera_rounded, color: fg),
+                      ),
+                      Container(width: 1, height: 24, color: bottomBorder),
+                      IconButton(
+                        onPressed: _openManualEntry,
+                        icon: Icon(Icons.edit_rounded, color: fg),
+                      ),
                     ],
                   ),
                 ),
-                SizedBox(
-                  height: 46,
-                  child: ListView.separated(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    scrollDirection: Axis.horizontal,
-                    itemBuilder: (_, i) {
-                      final c = categories[i];
-                      final selected = c == selectedCategory;
-                      return ChoiceChip(
-                        label: Text(c),
-                        selected: selected,
-                        onSelected: (_) => setState(() => selectedCategory = c),
-                        selectedColor: AppColors.accent,
-                        labelStyle: TextStyle(
-                          color: selected ? Colors.black : Colors.white,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 16,
-                        ),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(999)),
-                        backgroundColor: AppColors.surfaceSoft,
-                        side: BorderSide.none,
-                        showCheckmark: false,
-                      );
-                    },
-                    separatorBuilder: (_, __) => const SizedBox(width: 8),
-                    itemCount: categories.length,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Expanded(
-                  child: ListView.builder(
-                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-                    itemCount: recipes.length,
-                    itemBuilder: (context, index) => _RecipeCard(recipe: recipes[index]),
-                  ),
-                ),
-                const _BottomNav(),
-              ],
-            );
-          },
-        ),
-      ),
-    );
-  }
-}
-
-class _RecipeCard extends StatelessWidget {
-  final Recipe recipe;
-
-  const _RecipeCard({required this.recipe});
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () => Navigator.push(
-        context,
-        MaterialPageRoute(builder: (_) => RecipeDetailScreen(recipe: recipe)),
-      ),
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 16),
-        height: 248,
-        clipBehavior: Clip.antiAlias,
-        decoration: BoxDecoration(borderRadius: BorderRadius.circular(24)),
-        child: Stack(
-          fit: StackFit.expand,
-          children: [
-            Image.asset(recipe.imageUrl, fit: BoxFit.cover),
-            const DecoratedBox(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.bottomCenter,
-                  end: Alignment.topCenter,
-                  colors: [Color(0xE6000000), Color(0x22000000)],
-                ),
               ),
-            ),
-            Positioned(
-              left: 16,
-              right: 16,
-              bottom: 16,
-              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Text(recipe.title, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w600)),
-                const SizedBox(height: 6),
-                Text('Match ${recipe.matchScore}% • ${recipe.minutes} min • ${recipe.difficulty}',
-                    style: const TextStyle(fontSize: 14)),
-              ]),
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class _BottomNav extends StatelessWidget {
-  const _BottomNav();
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 88,
-      margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-      decoration: BoxDecoration(
-        color: const Color(0xEE171B20),
-        borderRadius: BorderRadius.circular(24),
-      ),
-      child: const Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          Icon(Icons.home_filled, color: AppColors.accent),
-          Icon(Icons.camera_alt_rounded, color: Colors.white70),
-          Icon(Icons.bookmark_rounded, color: Colors.white70),
-          Icon(Icons.settings_rounded, color: Colors.white70),
-        ],
       ),
     );
   }

@@ -1,27 +1,29 @@
 import 'package:flutter/material.dart';
 
-class LoginScreen extends StatefulWidget {
-  final Future<void> Function() onLogin;
-  final VoidCallback onOpenRegister;
+class RegisterScreen extends StatefulWidget {
+  final Future<void> Function() onRegister;
+  final VoidCallback onBackToLogin;
 
-  const LoginScreen({
+  const RegisterScreen({
     super.key,
-    required this.onLogin,
-    required this.onOpenRegister,
+    required this.onRegister,
+    required this.onBackToLogin,
   });
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<RegisterScreen> createState() => _RegisterScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _RegisterScreenState extends State<RegisterScreen> {
   final _email = TextEditingController();
   final _password = TextEditingController();
+  final _confirm = TextEditingController();
 
   @override
   void dispose() {
     _email.dispose();
     _password.dispose();
+    _confirm.dispose();
     super.dispose();
   }
 
@@ -36,43 +38,34 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const SizedBox(height: 72),
-                Center(
-                  child: Container(
-                    width: 112,
-                    height: 112,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF2FD4CB),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: const Icon(Icons.ramen_dining, color: Color(0xFF063F43), size: 52),
+                const SizedBox(height: 14),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: TextButton.icon(
+                    onPressed: widget.onBackToLogin,
+                    icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white70, size: 16),
+                    label: const Text('Back to login', style: TextStyle(color: Colors.white70)),
                   ),
                 ),
-                const SizedBox(height: 56),
-                const Text(
-                  'Login',
-                  style: TextStyle(fontSize: 42, fontWeight: FontWeight.w700, color: Color(0xFF2FD4CB)),
-                ),
+                const SizedBox(height: 28),
+                const Text('Sign Up', style: TextStyle(fontSize: 42, fontWeight: FontWeight.w700, color: Color(0xFF2FD4CB))),
                 const SizedBox(height: 20),
                 _AuthInput(controller: _email, hint: 'Email', icon: Icons.mail_outline),
                 const SizedBox(height: 12),
                 _AuthInput(controller: _password, hint: 'Password', icon: Icons.lock_outline, obscure: true),
-                const SizedBox(height: 10),
-                const Align(
-                  alignment: Alignment.centerRight,
-                  child: Text('Forgot Password', style: TextStyle(color: Color(0xFF2FD4CB), fontWeight: FontWeight.w600)),
-                ),
+                const SizedBox(height: 12),
+                _AuthInput(controller: _confirm, hint: 'Confirm Password', icon: Icons.lock_clock_outlined, obscure: true),
                 const SizedBox(height: 18),
                 SizedBox(
                   height: 52,
                   child: ElevatedButton(
-                    onPressed: () async => widget.onLogin(),
+                    onPressed: () async => widget.onRegister(),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF2FD4CB),
                       foregroundColor: const Color(0xFF042A2F),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                     ),
-                    child: const Text('Login', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800)),
+                    child: const Text('Sign Up', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800)),
                   ),
                 ),
                 const SizedBox(height: 26),
@@ -105,7 +98,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     children: [
                       const Text('Dont have an account? ', style: TextStyle(color: Colors.white70)),
                       GestureDetector(
-                        onTap: widget.onOpenRegister,
+                        onTap: widget.onBackToLogin,
                         child: const Text('Sign Up', style: TextStyle(color: Color(0xFF2FD4CB), fontWeight: FontWeight.w700)),
                       ),
                     ],

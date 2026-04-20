@@ -6,6 +6,7 @@ Mobile-first Flutter frontend prototype for **munch.ai**.
 - Frontend only
 - Dummy data + placeholder assets
 - No backend integration yet
+- One-time onboarding flow after first login (persisted locally)
 
 ## Local API key convention (future backend)
 Create a local file:
