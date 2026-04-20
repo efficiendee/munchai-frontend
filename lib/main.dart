@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'core/theme/app_theme.dart';
-import 'features/onboarding/onboarding_screen.dart';
+import 'features/auth/login_screen.dart';
 
 void main() {
   runApp(const MunchAiApp());
@@ -16,7 +16,7 @@ class MunchAiApp extends StatelessWidget {
       title: 'munch.ai',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.dark,
-      home: const OnboardingScreen(),
+      home: const LoginScreen(),
     );
   }
 }

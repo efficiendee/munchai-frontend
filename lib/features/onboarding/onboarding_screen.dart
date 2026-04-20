@@ -21,70 +21,90 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Welcome to munch.ai')),
+      appBar: AppBar(title: const Text('Setup your taste profile')),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          const Text('1) Dietary Profile', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
-          const SizedBox(height: 8),
-          Wrap(
-            spacing: 8,
-            children: diets
-                .map(
-                  (d) => ChoiceChip(
-                    label: Text(d),
-                    selected: _diet == d,
-                    onSelected: (_) => setState(() => _diet = d),
-                  ),
-                )
-                .toList(),
+          _Section(
+            title: 'Diet',
+            child: Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: diets
+                  .map((d) => ChoiceChip(
+                        label: Text(d),
+                        selected: _diet == d,
+                        onSelected: (_) => setState(() => _diet = d),
+                      ))
+                  .toList(),
+            ),
           ),
-          const SizedBox(height: 20),
-          const Text('2) Allergens (hard filters)', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
-          const SizedBox(height: 8),
-          Wrap(
-            spacing: 8,
-            children: allergens
-                .map(
-                  (a) => FilterChip(
-                    label: Text(a),
-                    selected: _allergens.contains(a),
-                    onSelected: (selected) => setState(() {
-                      selected ? _allergens.add(a) : _allergens.remove(a);
-                    }),
-                  ),
-                )
-                .toList(),
+          _Section(
+            title: 'Allergens (hard filter)',
+            child: Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: allergens
+                  .map((a) => FilterChip(
+                        label: Text(a),
+                        selected: _allergens.contains(a),
+                        onSelected: (selected) => setState(() {
+                          selected ? _allergens.add(a) : _allergens.remove(a);
+                        }),
+                      ))
+                  .toList(),
+            ),
           ),
-          const SizedBox(height: 20),
-          const Text('3) Goals', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
-          const SizedBox(height: 8),
-          Wrap(
-            spacing: 8,
-            children: goals
-                .map(
-                  (g) => FilterChip(
-                    label: Text(g),
-                    selected: _goals.contains(g),
-                    onSelected: (selected) => setState(() {
-                      selected ? _goals.add(g) : _goals.remove(g);
-                    }),
-                  ),
-                )
-                .toList(),
+          _Section(
+            title: 'Goals',
+            child: Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: goals
+                  .map((g) => FilterChip(
+                        label: Text(g),
+                        selected: _goals.contains(g),
+                        onSelected: (selected) => setState(() {
+                          selected ? _goals.add(g) : _goals.remove(g);
+                        }),
+                      ))
+                  .toList(),
+            ),
           ),
-          const SizedBox(height: 28),
+          const SizedBox(height: 12),
           ElevatedButton(
-            onPressed: () {
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (_) => const HomeScreen()),
-              );
-            },
-            child: const Text('Continue to Recipes'),
-          ),
+            onPressed: () => Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (_) => const HomeScreen()),
+            ),
+            child: const Text('Continue'),
+          )
         ],
       ),
+    );
+  }
+}
+
+class _Section extends StatelessWidget {
+  final String title;
+  final Widget child;
+
+  const _Section({required this.title, required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 14),
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: const Color(0x441B2026),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+        const SizedBox(height: 8),
+        child,
+      ]),
     );
   }
 }
