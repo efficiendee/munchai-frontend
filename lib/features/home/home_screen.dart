@@ -53,9 +53,16 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> _openManualEntry() async {
     final controller = TextEditingController();
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final sheetBg = isDark ? const Color(0xFF151A22) : const Color(0xFFF4F7F8);
+    final fg = isDark ? Colors.white : const Color(0xFF0F1216);
+    final muted = isDark ? Colors.white70 : const Color(0xFF4E5961);
+    final fieldBg = isDark ? const Color(0xFF1A2328) : Colors.white;
+    final fieldBorder = isDark ? const Color(0xFF33414A) : const Color(0xFFD1DAE0);
+
     await showModalBottomSheet<void>(
       context: context,
-      backgroundColor: const Color(0xFF151A22),
+      backgroundColor: sheetBg,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(22)),
       ),
@@ -71,11 +78,32 @@ class _HomeScreenState extends State<HomeScreen> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const Text('Lebensmittel manuell hinzufügen', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
+              Text(
+                'Lebensmittel manuell hinzufügen',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: fg),
+              ),
               const SizedBox(height: 10),
               TextField(
                 controller: controller,
-                decoration: const InputDecoration(hintText: 'z. B. Paprika, Reis, Joghurt'),
+                style: TextStyle(color: fg),
+                decoration: InputDecoration(
+                  hintText: 'z. B. Paprika, Reis, Joghurt',
+                  hintStyle: TextStyle(color: muted),
+                  filled: true,
+                  fillColor: fieldBg,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: fieldBorder),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: fieldBorder),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: const BorderSide(color: Color(0xFF2FD4CB), width: 1.3),
+                  ),
+                ),
               ),
               const SizedBox(height: 12),
               ElevatedButton(
