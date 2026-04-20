@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../recipe_detail/recipe_detail_screen.dart';
 import '../../core/data/dummy_recipes.dart';
 import 'camera_capture_screen.dart';
+import 'settings_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -81,7 +82,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: Row(
                       children: [
                         IconButton(
-                          onPressed: () {},
+                          onPressed: () => Navigator.of(context).push(
+                            MaterialPageRoute(builder: (_) => const SettingsScreen()),
+                          ),
                           padding: EdgeInsets.zero,
                           icon: const Icon(Icons.menu, color: Colors.white),
                         ),
