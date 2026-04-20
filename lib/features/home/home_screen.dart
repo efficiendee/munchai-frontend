@@ -74,8 +74,16 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final fg = isDark ? Colors.white : const Color(0xFF0F1216);
+    final muted = isDark ? Colors.white70 : const Color(0xFF4E5961);
+    final chipBg = isDark ? const Color(0xFF152228) : const Color(0xFFE4EAEE);
+    final chipBorder = isDark ? const Color(0xFF2A3A40) : const Color(0xFFD1DAE0);
+    final bottomBg = isDark ? const Color(0xFF131A20) : Colors.white;
+    final bottomBorder = isDark ? const Color(0xFF263038) : const Color(0xFFD1DAE0);
+
     return Scaffold(
-      backgroundColor: const Color(0xFF0F1216),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: Stack(
           children: [
@@ -98,7 +106,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                           ),
                           padding: EdgeInsets.zero,
-                          icon: const Icon(Icons.menu, color: Colors.white),
+                          icon: Icon(Icons.menu, color: fg),
                         ),
                         const Spacer(),
                         Container(
@@ -114,22 +122,22 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                   const SizedBox(height: 255),
-                  const Align(
+                  Align(
                     alignment: Alignment.center,
                     child: Text(
                       'Whats in your fridge?',
                       textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 28, fontWeight: FontWeight.w600),
+                      style: TextStyle(fontSize: 28, fontWeight: FontWeight.w600, color: fg),
                     ),
                   ),
                   const SizedBox(height: 12),
-                  const Center(
+                  Center(
                     child: SizedBox(
                       width: 195,
                       child: Text(
                         'Add your ingredients, choose filters, or get inspired',
                         textAlign: TextAlign.center,
-                        style: TextStyle(color: Colors.white70, height: 1.5, fontSize: 16),
+                        style: TextStyle(color: muted, height: 1.5, fontSize: 16),
                       ),
                     ),
                   ),
@@ -142,16 +150,16 @@ class _HomeScreenState extends State<HomeScreen> {
                       children: _ingredients
                           .map(
                             (e) => Chip(
-                              label: Text(e),
-                              backgroundColor: const Color(0xFF152228),
-                              side: const BorderSide(color: Color(0xFF2A3A40)),
+                              label: Text(e, style: TextStyle(color: fg)),
+                              backgroundColor: chipBg,
+                              side: BorderSide(color: chipBorder),
                             ),
                           )
                           .toList(),
                     ),
                   ),
                   const SizedBox(height: 16),
-                  const Text('Recent Recipes', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: Colors.white70)),
+                  Text('Recent Recipes', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: muted)),
                   const SizedBox(height: 8),
                   Expanded(
                     child: ListView.builder(
@@ -185,21 +193,21 @@ class _HomeScreenState extends State<HomeScreen> {
                   width: 224,
                   height: 56,
                   decoration: BoxDecoration(
-                    color: const Color(0xFF131A20),
+                    color: bottomBg,
                     borderRadius: BorderRadius.circular(14),
-                    border: Border.all(color: const Color(0xFF263038)),
+                    border: Border.all(color: bottomBorder),
                   ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       IconButton(
                         onPressed: _openCamera,
-                        icon: const Icon(Icons.photo_camera_rounded, color: Colors.white),
+                        icon: Icon(Icons.photo_camera_rounded, color: fg),
                       ),
-                      Container(width: 1, height: 24, color: const Color(0xFF33414A)),
+                      Container(width: 1, height: 24, color: bottomBorder),
                       IconButton(
                         onPressed: _openManualEntry,
-                        icon: const Icon(Icons.edit_rounded, color: Colors.white),
+                        icon: Icon(Icons.edit_rounded, color: fg),
                       ),
                     ],
                   ),

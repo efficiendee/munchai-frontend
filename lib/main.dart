@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'core/storage/app_prefs.dart';
 import 'core/theme/app_theme.dart';
@@ -33,6 +34,25 @@ class _MunchAiAppState extends State<MunchAiApp> {
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,
       themeMode: _isDarkMode ? ThemeMode.dark : ThemeMode.light,
+      builder: (context, child) {
+        final isDark = _isDarkMode;
+        return AnnotatedRegion<SystemUiOverlayStyle>(
+          value: isDark
+              ? const SystemUiOverlayStyle(
+                  statusBarColor: Colors.transparent,
+                  statusBarIconBrightness: Brightness.light,
+                  statusBarBrightness: Brightness.dark,
+                  systemNavigationBarIconBrightness: Brightness.light,
+                )
+              : const SystemUiOverlayStyle(
+                  statusBarColor: Colors.transparent,
+                  statusBarIconBrightness: Brightness.dark,
+                  statusBarBrightness: Brightness.light,
+                  systemNavigationBarIconBrightness: Brightness.dark,
+                ),
+          child: child ?? const SizedBox.shrink(),
+        );
+      },
       home: _AppGate(
         isDarkMode: _isDarkMode,
         onThemeChanged: _setDarkMode,

@@ -12,8 +12,12 @@ class SettingsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final fg = isDark ? Colors.white : const Color(0xFF0F1216);
+    final muted = isDark ? Colors.white70 : const Color(0xFF4E5961);
+
     return Scaffold(
-      backgroundColor: const Color(0xFF0F1216),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -27,62 +31,59 @@ class SettingsScreen extends StatelessWidget {
                   children: [
                     IconButton(
                       onPressed: () => Navigator.pop(context),
-                      icon: const Icon(Icons.arrow_back_rounded, color: Colors.white, size: 24),
+                      icon: Icon(Icons.arrow_back_rounded, color: fg, size: 24),
                     ),
                     const Spacer(),
-                    IconButton(onPressed: () {}, icon: const Icon(Icons.favorite_border, color: Colors.white, size: 24)),
-                    IconButton(onPressed: () {}, icon: const Icon(Icons.share_outlined, color: Colors.white, size: 24)),
+                    IconButton(onPressed: () {}, icon: Icon(Icons.favorite_border, color: fg, size: 24)),
+                    IconButton(onPressed: () {}, icon: Icon(Icons.share_outlined, color: fg, size: 24)),
                   ],
                 ),
               ),
               const SizedBox(height: 8),
-              const Text('Settings', style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600, color: Colors.white)),
+              Text('Settings', style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600, color: fg)),
               const SizedBox(height: 24),
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-                child: Row(
-                  children: [
-                    Container(
-                      width: 140,
-                      height: 140,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF172127),
-                        borderRadius: BorderRadius.circular(14),
-                      ),
+              Row(
+                children: [
+                  Container(
+                    width: 140,
+                    height: 140,
+                    decoration: BoxDecoration(
+                      color: isDark ? const Color(0xFF172127) : const Color(0xFFE4EAEE),
+                      borderRadius: BorderRadius.circular(14),
                     ),
-                    const SizedBox(width: 24),
-                    const Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('Personalized recipes for you.', style: TextStyle(color: Colors.white70, fontSize: 16, fontWeight: FontWeight.w400)),
-                          SizedBox(height: 18),
-                          Text('Hi, Jonas', style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w600)),
-                          SizedBox(height: 12),
-                          Row(
-                            children: [
-                              Icon(Icons.local_florist_outlined, size: 14, color: Colors.white70),
-                              SizedBox(width: 6),
-                              Text('Edit profile', style: TextStyle(color: Colors.white70, fontSize: 14, fontWeight: FontWeight.w400)),
-                            ],
-                          ),
-                        ],
-                      ),
-                    )
-                  ],
-                ),
+                  ),
+                  const SizedBox(width: 24),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Personalized recipes for you.', style: TextStyle(color: muted, fontSize: 16, fontWeight: FontWeight.w400)),
+                        const SizedBox(height: 18),
+                        Text('Hi, Jonas', style: TextStyle(color: fg, fontSize: 20, fontWeight: FontWeight.w600)),
+                        const SizedBox(height: 12),
+                        Row(
+                          children: [
+                            Icon(Icons.local_florist_outlined, size: 14, color: muted),
+                            const SizedBox(width: 6),
+                            Text('Edit profile', style: TextStyle(color: muted, fontSize: 14, fontWeight: FontWeight.w400)),
+                          ],
+                        ),
+                      ],
+                    ),
+                  )
+                ],
               ),
               const SizedBox(height: 24),
               _ModeRow(
                 isDarkMode: isDarkMode,
                 onChanged: onThemeChanged,
+                fg: fg,
               ),
               const SizedBox(height: 6),
-              const _NavRow(icon: Icons.favorite_border, label: 'My favorites'),
-              const _NavRow(icon: Icons.language, label: 'Language'),
-              const _NavRow(icon: Icons.accessibility_new, label: 'Accessibility'),
-              const _NavRow(icon: Icons.schedule, label: 'History'),
+              _NavRow(icon: Icons.favorite_border, label: 'My favorites', fg: fg),
+              _NavRow(icon: Icons.language, label: 'Language', fg: fg),
+              _NavRow(icon: Icons.accessibility_new, label: 'Accessibility', fg: fg),
+              _NavRow(icon: Icons.schedule, label: 'History', fg: fg),
             ],
           ),
         ),
@@ -94,8 +95,9 @@ class SettingsScreen extends StatelessWidget {
 class _ModeRow extends StatelessWidget {
   final bool isDarkMode;
   final ValueChanged<bool> onChanged;
+  final Color fg;
 
-  const _ModeRow({required this.isDarkMode, required this.onChanged});
+  const _ModeRow({required this.isDarkMode, required this.onChanged, required this.fg});
 
   @override
   Widget build(BuildContext context) {
@@ -103,7 +105,7 @@ class _ModeRow extends StatelessWidget {
       height: 56,
       child: Row(
         children: [
-          const Text('Switch Mode', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w400)),
+          Text('Dark Mode', style: TextStyle(color: fg, fontSize: 16, fontWeight: FontWeight.w400)),
           const Spacer(),
           GestureDetector(
             onTap: () => onChanged(!isDarkMode),
@@ -138,8 +140,9 @@ class _ModeRow extends StatelessWidget {
 class _NavRow extends StatelessWidget {
   final IconData icon;
   final String label;
+  final Color fg;
 
-  const _NavRow({required this.icon, required this.label});
+  const _NavRow({required this.icon, required this.label, required this.fg});
 
   @override
   Widget build(BuildContext context) {
@@ -147,11 +150,11 @@ class _NavRow extends StatelessWidget {
       height: 48,
       child: Row(
         children: [
-          Icon(icon, color: Colors.white, size: 24),
+          Icon(icon, color: fg, size: 24),
           const SizedBox(width: 12),
-          Text(label, style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w400)),
+          Text(label, style: TextStyle(color: fg, fontSize: 16, fontWeight: FontWeight.w400)),
           const Spacer(),
-          const Icon(Icons.arrow_forward_ios_rounded, color: Colors.white, size: 18),
+          Icon(Icons.arrow_forward_ios_rounded, color: fg, size: 18),
         ],
       ),
     );
