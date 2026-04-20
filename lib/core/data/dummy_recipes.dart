@@ -4,31 +4,33 @@ const dummyRecipes = <Recipe>[
   Recipe(
     id: '1',
     title: 'Soy-Garlic Chicken Rice Bowl',
-    image: 'assets/images/recipe1.png',
+    imageUrl: 'assets/images/recipe1.png',
     matchScore: 95,
     minutes: 20,
     difficulty: 'Easy',
-    ingredients: ['Chicken', 'Rice', 'Soy sauce', 'Garlic', 'Scallions'],
+    tagline: 'Sweet umami comfort bowl',
+    ingredients: ['300g chicken breast', '150g rice', '40ml soy sauce', '3 cloves garlic', '1 onion', 'carrot'],
     steps: [
       'Cook rice and keep warm.',
-      'Sear chicken strips for 6–8 min.',
+      'Sear chicken cubes for 6–8 min.',
       'Add garlic + soy sauce and glaze.',
-      'Serve over rice, top with scallions.'
+      'Serve over rice with carrot and scallions.'
     ],
   ),
   Recipe(
     id: '2',
-    title: 'Protein Pasta Bowl',
-    image: 'assets/images/recipe2.png',
+    title: 'Salmon Poke Bowl',
+    imageUrl: 'assets/images/recipe2.png',
     matchScore: 88,
     minutes: 18,
     difficulty: 'Easy',
-    ingredients: ['Pasta', 'Greek yogurt', 'Spinach', 'Parmesan'],
+    tagline: 'Fresh and protein-rich',
+    ingredients: ['Salmon', 'Rice', 'Cucumber', 'Avocado', 'Sesame'],
     steps: [
-      'Boil pasta al dente.',
-      'Mix yogurt with pasta water and parmesan.',
-      'Fold in spinach and pasta.',
-      'Season and plate.'
+      'Cook and cool rice.',
+      'Cube salmon and season lightly.',
+      'Slice cucumber and avocado.',
+      'Assemble bowl and finish with sesame.'
     ],
   ),
 ];

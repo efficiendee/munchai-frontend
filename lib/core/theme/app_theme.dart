@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'app_colors.dart';
+
 class AppTheme {
   static ThemeData get dark {
     const bg = Color(0xFF0F1216);
@@ -7,12 +9,13 @@ class AppTheme {
     const accent = Color(0xFF2FD4CB);
 
     return ThemeData(
+      useMaterial3: true,
       brightness: Brightness.dark,
-      scaffoldBackgroundColor: bg,
+      scaffoldBackgroundColor: AppColors.bg,
       colorScheme: const ColorScheme.dark(
-        primary: accent,
-        secondary: accent,
-        surface: card,
+        primary: AppColors.accent,
+        secondary: AppColors.accent,
+        surface: AppColors.surface,
       ),
       fontFamily: 'Rubik',
       appBarTheme: const AppBarTheme(backgroundColor: bg, elevation: 0),
@@ -45,8 +48,26 @@ class AppTheme {
       fontFamily: 'Rubik',
       appBarTheme: const AppBarTheme(backgroundColor: bg, elevation: 0),
       cardTheme: CardThemeData(
-        color: card,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        color: AppColors.surface,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+      ),
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: AppColors.surfaceSoft,
+        hintStyle: const TextStyle(color: AppColors.textMuted),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(18),
+          borderSide: BorderSide.none,
+        ),
+      ),
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: AppColors.accent,
+          foregroundColor: Colors.black,
+          minimumSize: const Size.fromHeight(54),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+          textStyle: const TextStyle(fontWeight: FontWeight.w800),
+        ),
       ),
     );
   }
