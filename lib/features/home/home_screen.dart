@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
-import '../recipe_detail/recipe_detail_screen.dart';
 import '../../core/data/dummy_recipes.dart';
+import '../recipe_detail/recipe_detail_screen.dart';
 import 'settings_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -117,74 +117,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: const Text('Hinzufügen'),
               ),
             ],
-          ),
-        );
-      },
-    );
-  }
-
-  @override
-  State<HomeScreen> createState() => _HomeScreenState();
-}
-
-class _HomeScreenState extends State<HomeScreen> {
-  late Future<List<Recipe>> _recipesFuture;
-  double maxTime = 35;
-  String selectedCategory = 'Breakfast';
-
-  final categories = const ['Breakfast', 'Summer', 'Chinese Food', 'Umami'];
-
-  @override
-  void initState() {
-    super.initState();
-    _recipesFuture = AppScope.recipes.getRecommendations();
-  }
-
-  void _openFilters() {
-    showModalBottomSheet<void>(
-      context: context,
-      backgroundColor: const Color(0xFF14181D),
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
-      ),
-      builder: (context) {
-        double draftMaxTime = maxTime;
-        return StatefulBuilder(
-          builder: (context, setModalState) => SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      const Text('Filters', style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800)),
-                      const Spacer(),
-                      IconButton(
-                        onPressed: () => Navigator.pop(context),
-                        icon: const Icon(Icons.close),
-                      )
-                    ],
-                  ),
-                  Text('Max cooking time: ${draftMaxTime.round()} min'),
-                  Slider(
-                    value: draftMaxTime,
-                    min: 10,
-                    max: 60,
-                    onChanged: (v) => setModalState(() => draftMaxTime = v),
-                  ),
-                  const SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: () {
-                      setState(() => maxTime = draftMaxTime);
-                      Navigator.pop(context);
-                    },
-                    child: const Text('Apply'),
-                  ),
-                ],
-              ),
-            ),
           ),
         );
       },
