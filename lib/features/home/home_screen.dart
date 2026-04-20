@@ -99,7 +99,14 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                   const SizedBox(height: 255),
-                  const Text('Whats in your fridge?', style: TextStyle(fontSize: 28, fontWeight: FontWeight.w600)),
+                  const Align(
+                    alignment: Alignment.center,
+                    child: Text(
+                      'Whats in your fridge?',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontSize: 28, fontWeight: FontWeight.w600),
+                    ),
+                  ),
                   const SizedBox(height: 12),
                   const Center(
                     child: SizedBox(
@@ -112,20 +119,25 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                   const SizedBox(height: 24),
-                  Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    children: _ingredients
-                        .map(
-                          (e) => Chip(
-                            label: Text(e),
-                            backgroundColor: const Color(0xFF152228),
-                            side: const BorderSide(color: Color(0xFF2A3A40)),
-                          ),
-                        )
-                        .toList(),
+                  Center(
+                    child: Wrap(
+                      alignment: WrapAlignment.center,
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: _ingredients
+                          .map(
+                            (e) => Chip(
+                              label: Text(e),
+                              backgroundColor: const Color(0xFF152228),
+                              side: const BorderSide(color: Color(0xFF2A3A40)),
+                            ),
+                          )
+                          .toList(),
+                    ),
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 16),
+                  const Text('Recent Recipes', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: Colors.white70)),
+                  const SizedBox(height: 8),
                   Expanded(
                     child: ListView.builder(
                       itemCount: dummyRecipes.length,
@@ -167,17 +179,12 @@ class _HomeScreenState extends State<HomeScreen> {
                     children: [
                       IconButton(
                         onPressed: _openCamera,
-                        icon: const Icon(Icons.upload_rounded, color: Colors.white),
+                        icon: const Icon(Icons.photo_camera_rounded, color: Colors.white),
                       ),
                       Container(width: 1, height: 24, color: const Color(0xFF33414A)),
                       IconButton(
                         onPressed: _openManualEntry,
-                        icon: const Icon(Icons.tune_rounded, color: Colors.white),
-                      ),
-                      Container(width: 1, height: 24, color: const Color(0xFF33414A)),
-                      IconButton(
-                        onPressed: () {},
-                        icon: const Icon(Icons.auto_awesome_rounded, color: Colors.white),
+                        icon: const Icon(Icons.edit_rounded, color: Colors.white),
                       ),
                     ],
                   ),
